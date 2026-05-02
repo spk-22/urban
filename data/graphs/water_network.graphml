@@ -1,0 +1,646 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d7" for="edge" attr.name="weight" attr.type="double" />
+  <key id="d6" for="node" attr.name="man_made" attr.type="string" />
+  <key id="d5" for="node" attr.name="landuse" attr.type="string" />
+  <key id="d4" for="node" attr.name="operator" attr.type="string" />
+  <key id="d3" for="node" attr.name="name" attr.type="string" />
+  <key id="d2" for="node" attr.name="water_type" attr.type="string" />
+  <key id="d1" for="node" attr.name="longitude" attr.type="double" />
+  <key id="d0" for="node" attr.name="latitude" attr.type="double" />
+  <graph edgedefault="undirected">
+    <node id="928188140">
+      <data key="d0">12.9081764</data>
+      <data key="d1">77.5842058</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">Ekaliki water supply</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="2344096581">
+      <data key="d0">13.0777063</data>
+      <data key="d1">77.5596275</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="4445077907">
+      <data key="d0">12.9240453</data>
+      <data key="d1">77.6636502</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">Shudhi Services</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="959519470">
+      <data key="d0">13.101241620000001</data>
+      <data key="d1">77.58603246</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="1485676606">
+      <data key="d0">12.982636299999998</data>
+      <data key="d1">77.64892933333333</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="1838377311">
+      <data key="d0">13.001755733333335</data>
+      <data key="d1">77.62796092</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="1121251409">
+      <data key="d0">12.982894228571428</data>
+      <data key="d1">77.58491065714286</data>
+      <data key="d2">Reservoir</data>
+      <data key="d3">Low Level Reservoir</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="2296630612">
+      <data key="d0">12.998899477777778</data>
+      <data key="d1">77.54583545555556</data>
+      <data key="d2">Water Tank</data>
+      <data key="d3">Rajajinagar BWSSB Water Tank</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="2389645071">
+      <data key="d0">12.897647014285713</data>
+      <data key="d1">77.61944174285715</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3417085535">
+      <data key="d0">12.9099281625</data>
+      <data key="d1">77.5618014875</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB Kumaraswamy Layout Service Station</data>
+      <data key="d4">N/A</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="1448082604">
+      <data key="d0">12.936299658333333</data>
+      <data key="d1">77.58843012916665</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422079564">
+      <data key="d0">13.01217101875</data>
+      <data key="d1">77.56668199999999</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB Combined Jewel Filters</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="12797133797">
+      <data key="d0">13.0900345125</data>
+      <data key="d1">77.5589712</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422096904">
+      <data key="d0">13.011876683333336</data>
+      <data key="d1">77.6554896</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422095788">
+      <data key="d0">12.987366433333333</data>
+      <data key="d1">77.58969832777778</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422107788">
+      <data key="d0">12.92249692</data>
+      <data key="d1">77.48328419999999</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422107766">
+      <data key="d0">12.91932032</data>
+      <data key="d1">77.5221561</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422107762">
+      <data key="d0">12.911461460000002</data>
+      <data key="d1">77.64669714</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422108401">
+      <data key="d0">12.9971229125</data>
+      <data key="d1">77.5110892625</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422107757">
+      <data key="d0">12.873942549999997</data>
+      <data key="d1">77.58526812499998</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="1572829924">
+      <data key="d0">12.993896855555557</data>
+      <data key="d1">77.5157048111111</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422110856">
+      <data key="d0">13.026541220000002</data>
+      <data key="d1">77.63448142</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3422132402">
+      <data key="d0">13.05906508</data>
+      <data key="d1">77.58691032</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB Sahakarnagara</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3425329793">
+      <data key="d0">13.012297519999999</data>
+      <data key="d1">77.58177357999999</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">Kempegowda Tower BWSSB Service Station</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3425328777">
+      <data key="d0">12.941459781818184</data>
+      <data key="d1">77.56851571818181</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3428394631">
+      <data key="d0">12.97539034</data>
+      <data key="d1">77.56206498</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3677748544">
+      <data key="d0">13.100506909090909</data>
+      <data key="d1">77.58757114090909</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3711001730">
+      <data key="d0">12.977182716666668</data>
+      <data key="d1">77.71130408333333</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3711011392">
+      <data key="d0">12.972279585714288</data>
+      <data key="d1">77.62119392857143</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">N/A</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3930382958">
+      <data key="d0">13.00801712222222</data>
+      <data key="d1">77.55112911666666</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB Rajajinagara</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3968954825">
+      <data key="d0">12.924018140000001</data>
+      <data key="d1">77.55794535999999</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="4356274618">
+      <data key="d0">12.9557278</data>
+      <data key="d1">77.52945942</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="5020021462">
+      <data key="d0">12.916025571428571</data>
+      <data key="d1">77.57237258571429</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3374405017">
+      <data key="d0">12.975743880000001</data>
+      <data key="d1">77.64001895999999</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB Indiranagar</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="3506426622">
+      <data key="d0">12.9720188</data>
+      <data key="d1">77.64450422857144</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB Indiranagar</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="5644388856">
+      <data key="d0">13.020924066666666</data>
+      <data key="d1">77.64957155</data>
+      <data key="d2">Water Tank</data>
+      <data key="d3">BWSSB Water Tank</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="6809886325">
+      <data key="d0">12.914166714999999</data>
+      <data key="d1">77.489198935</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="6809868818">
+      <data key="d0">12.91454493</data>
+      <data key="d1">77.489273835</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">Trickling Filter</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="6809859867">
+      <data key="d0">12.914268974999999</data>
+      <data key="d1">77.488728705</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">Trickling Filter</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="7164421084">
+      <data key="d0">12.97344234</data>
+      <data key="d1">77.53817675999998</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="9919570176">
+      <data key="d0">12.857468508333334</data>
+      <data key="d1">77.58458775833334</data>
+      <data key="d2">Reservoir</data>
+      <data key="d3">Gottigere 50ML Reservoir</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="9919570182">
+      <data key="d0">12.866671314285714</data>
+      <data key="d1">77.58182792857143</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="9940038058">
+      <data key="d0">13.113020716666666</data>
+      <data key="d1">77.6077909</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="9967192799">
+      <data key="d0">13.034419660000001</data>
+      <data key="d1">77.50082806</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="10573114566">
+      <data key="d0">12.90807618</data>
+      <data key="d1">77.65263458</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="10984680964">
+      <data key="d0">13.111618459999999</data>
+      <data key="d1">77.57914726</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">Treatment Plant</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="11279857279">
+      <data key="d0">12.9162311375</data>
+      <data key="d1">77.6070488</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="11506520718">
+      <data key="d0">12.943828360000001</data>
+      <data key="d1">77.71704131999999</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="12369330586">
+      <data key="d0">12.850672625000001</data>
+      <data key="d1">77.5731812</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">N/A</data>
+      <data key="d5">industrial</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="12431000694">
+      <data key="d0">13.110033912499999</data>
+      <data key="d1">77.63104935000001</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">N/A</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="12443389852">
+      <data key="d0">12.87314631</data>
+      <data key="d1">77.51949759000001</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB Resrvoir Banashankari 6th Stage</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="12531280491">
+      <data key="d0">12.993309783333332</data>
+      <data key="d1">77.60962731666666</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">N/A</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <node id="12627965237">
+      <data key="d0">13.03404214</data>
+      <data key="d1">77.62414898</data>
+      <data key="d2">Water Works</data>
+      <data key="d3">BWSSB</data>
+      <data key="d4">BWSSB</data>
+      <data key="d5">N/A</data>
+      <data key="d6">water_works</data>
+    </node>
+    <edge source="928188140" target="2344096581">
+      <data key="d7">18943.76285154616</data>
+    </edge>
+    <edge source="2344096581" target="4445077907">
+      <data key="d7">20404.25473441517</data>
+    </edge>
+    <edge source="4445077907" target="959519470">
+      <data key="d7">21335.079498388885</data>
+    </edge>
+    <edge source="959519470" target="1485676606">
+      <data key="d7">14788.974426239114</data>
+    </edge>
+    <edge source="1485676606" target="1838377311">
+      <data key="d7">3106.261102531107</data>
+    </edge>
+    <edge source="1838377311" target="1121251409">
+      <data key="d7">5115.383708173867</data>
+    </edge>
+    <edge source="1121251409" target="2296630612">
+      <data key="d7">4594.152037909009</data>
+    </edge>
+    <edge source="2296630612" target="2389645071">
+      <data key="d7">13757.331830915888</data>
+    </edge>
+    <edge source="2389645071" target="3417085535">
+      <data key="d7">6401.335654806596</data>
+    </edge>
+    <edge source="3417085535" target="1448082604">
+      <data key="d7">4106.331031332023</data>
+    </edge>
+    <edge source="1448082604" target="3422079564">
+      <data key="d7">8719.020093220997</data>
+    </edge>
+    <edge source="3422079564" target="12797133797">
+      <data key="d7">8654.614067089282</data>
+    </edge>
+    <edge source="12797133797" target="3422096904">
+      <data key="d7">13577.821584618523</data>
+    </edge>
+    <edge source="3422096904" target="3422095788">
+      <data key="d7">7635.089401211143</data>
+    </edge>
+    <edge source="3422095788" target="3422107788">
+      <data key="d7">13594.909429648014</data>
+    </edge>
+    <edge source="3422107788" target="3422107766">
+      <data key="d7">4232.95319488613</data>
+    </edge>
+    <edge source="3422107766" target="3422107762">
+      <data key="d7">13543.301926271251</data>
+    </edge>
+    <edge source="3422107762" target="3422108401">
+      <data key="d7">17501.784440573523</data>
+    </edge>
+    <edge source="3422108401" target="3422107757">
+      <data key="d7">15827.159729458503</data>
+    </edge>
+    <edge source="3422107757" target="1572829924">
+      <data key="d7">15267.21055498089</data>
+    </edge>
+    <edge source="1572829924" target="3422110856">
+      <data key="d7">13381.4773563044</data>
+    </edge>
+    <edge source="3422110856" target="3422132402">
+      <data key="d7">6290.525682115337</data>
+    </edge>
+    <edge source="3422132402" target="3425329793">
+      <data key="d7">5203.846753425797</data>
+    </edge>
+    <edge source="3425329793" target="3425328777">
+      <data key="d7">7967.712746890267</data>
+    </edge>
+    <edge source="3425328777" target="3428394631">
+      <data key="d7">3818.438497007147</data>
+    </edge>
+    <edge source="3428394631" target="3677748544">
+      <data key="d7">14115.526519483008</data>
+    </edge>
+    <edge source="3677748544" target="3711001730">
+      <data key="d7">19138.137957737265</data>
+    </edge>
+    <edge source="3711001730" target="3711011392">
+      <data key="d7">9791.602583122478</data>
+    </edge>
+    <edge source="3711011392" target="3930382958">
+      <data key="d7">8567.99973865471</data>
+    </edge>
+    <edge source="3930382958" target="3968954825">
+      <data key="d7">9322.206039173256</data>
+    </edge>
+    <edge source="3968954825" target="4356274618">
+      <data key="d7">4675.555445286873</data>
+    </edge>
+    <edge source="4356274618" target="5020021462">
+      <data key="d7">6401.248591987761</data>
+    </edge>
+    <edge source="5020021462" target="3374405017">
+      <data key="d7">9875.525740171384</data>
+    </edge>
+    <edge source="3374405017" target="3506426622">
+      <data key="d7">637.6869012751646</data>
+    </edge>
+    <edge source="3506426622" target="5644388856">
+      <data key="d7">5438.268659170978</data>
+    </edge>
+    <edge source="5644388856" target="6809886325">
+      <data key="d7">21029.938299062982</data>
+    </edge>
+    <edge source="6809886325" target="6809868818">
+      <data key="d7">42.624032636607026</data>
+    </edge>
+    <edge source="6809868818" target="6809859867">
+      <data key="d7">66.57129586898324</data>
+    </edge>
+    <edge source="6809859867" target="7164421084">
+      <data key="d7">8464.275868628418</data>
+    </edge>
+    <edge source="7164421084" target="9919570176">
+      <data key="d7">13783.328230909223</data>
+    </edge>
+    <edge source="9919570176" target="9919570182">
+      <data key="d7">1061.257028837532</data>
+    </edge>
+    <edge source="9919570182" target="9940038058">
+      <data key="d7">27398.900839020087</data>
+    </edge>
+    <edge source="9940038058" target="9967192799">
+      <data key="d7">14497.755498081693</data>
+    </edge>
+    <edge source="9967192799" target="10573114566">
+      <data key="d7">21602.03896446863</data>
+    </edge>
+    <edge source="10573114566" target="10984680964">
+      <data key="d7">23887.48637066332</data>
+    </edge>
+    <edge source="10984680964" target="11279857279">
+      <data key="d7">21826.695133765235</data>
+    </edge>
+    <edge source="11279857279" target="11506520718">
+      <data key="d7">12320.133548246547</data>
+    </edge>
+    <edge source="11506520718" target="12369330586">
+      <data key="d7">18707.636446338573</data>
+    </edge>
+    <edge source="12369330586" target="12431000694">
+      <data key="d7">29372.06254734611</data>
+    </edge>
+    <edge source="12431000694" target="12443389852">
+      <data key="d7">28866.336974315924</data>
+    </edge>
+    <edge source="12443389852" target="12531280491">
+      <data key="d7">16503.82396259427</data>
+    </edge>
+    <edge source="12531280491" target="12627965237">
+      <data key="d7">4773.656114607708</data>
+    </edge>
+  </graph>
+</graphml>
