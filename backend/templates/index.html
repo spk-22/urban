@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bengaluru Road Cascade Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+        body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .card-hover:hover { transform: translateY(-4px); transition: all 0.3s ease; border-color: #3b82f6; }
+        .pulse-red { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        iframe { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; height: 600px; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="p-6 border-b border-slate-800 glass sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-route text-blue-500 text-3xl"></i>
+                <h1 class="text-2xl font-bold tracking-tight">Urban<span class="text-blue-500">Cascade</span></h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="px-3 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full border border-red-500/30 uppercase tracking-widest pulse-red">Peak Hour Active</span>
+                <span class="text-slate-400 text-sm">Bengaluru, IN</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-10 px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            
+            <!-- Left Sidebar: Hotspots -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-map-marker-alt text-red-500 mr-2"></i> Select Failure Hotspot
+                </h2>
+                
+                <div id="hotspot-list" class="space-y-4">
+                    <!-- Hotspots will be injected here -->
+                    <div class="p-4 glass rounded-xl animate-pulse bg-slate-800 h-24"></div>
+                    <div class="p-4 glass rounded-xl animate-pulse bg-slate-800 h-24"></div>
+                    <div class="p-4 glass rounded-xl animate-pulse bg-slate-800 h-24"></div>
+                </div>
+            </div>
+
+            <!-- Right: Map View & Stats -->
+            <div class="lg:col-span-2 space-y-6">
+                <div id="map-container" class="glass rounded-2xl overflow-hidden relative">
+                    <div id="loader" class="absolute inset-0 z-10 bg-slate-900/80 flex flex-col items-center justify-center hidden">
+                        <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
+                        <p class="text-blue-400 font-medium">Calculating Cascade Propagation...</p>
+                    </div>
+                    <div id="placeholder" class="h-[600px] flex flex-col items-center justify-center text-slate-500 italic">
+                        <i class="fas fa-map-marked-alt text-6xl mb-4 opacity-20"></i>
+                        <p>Select a hotspot to begin real-time simulation</p>
+                    </div>
+                    <iframe id="map-frame" class="hidden"></iframe>
+                </div>
+
+                <div id="stats-panel" class="grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
+                    <div class="glass p-4 rounded-xl text-center">
+                        <p class="text-slate-400 text-xs uppercase mb-1">Minutes Elapsed</p>
+                        <p id="stat-iter" class="text-2xl font-bold text-white">-</p>
+                    </div>
+                    <div class="glass p-4 rounded-xl text-center border-l-4 border-red-500">
+                        <p class="text-slate-400 text-xs uppercase mb-1">Failed Nodes</p>
+                        <p id="stat-overloaded" class="text-2xl font-bold text-white">-</p>
+                    </div>
+                    <div class="glass p-4 rounded-xl text-center">
+                        <p class="text-slate-400 text-xs uppercase mb-1">Congestion %</p>
+                        <p id="stat-impact" class="text-2xl font-bold text-orange-400">Peak</p>
+                    </div>
+                    <div class="glass p-4 rounded-xl text-center">
+                        <p class="text-slate-400 text-xs uppercase mb-1">Rerouting</p>
+                        <p id="stat-alt" class="text-2xl font-bold text-blue-400">Active</p>
+                    </div>
+                </div>
+
+                <div id="description-panel" class="glass p-6 rounded-2xl hidden">
+                    <h3 class="text-lg font-bold mb-2 text-blue-400">Scenario Analysis</h3>
+                    <p id="scenario-desc" class="text-slate-300 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const hotspots = [
+            { id: "silk_board", icon: "🟥", title: "Silk Board Junction", subtitle: "Hosur Road ↔ ORR", desc: "Infamous bottleneck. Merges Electronic City traffic with ORR freight. Causes kilometer-long queues." },
+            { id: "orr_it_corridor", icon: "🟧", title: "Outer Ring Road (ORR)", subtitle: "Marathahalli ↔ Bellandur", desc: "Core IT corridor. High density of tech parks and stop-go traffic waves during peak hours." },
+            { id: "kr_puram", icon: "🟨", title: "KR Puram - Tin Factory", subtitle: "Old Madras Road", desc: "Metro construction + narrow merges. Heavy truck-commuter mix causing gridlock chain reactions." },
+            { id: "hebbal", icon: "🟩", title: "Hebbal Junction", subtitle: "Airport Road ↔ ORR", desc: "Major interchange for North Bengaluru. Flyover merges create massive choke points." },
+            { id: "whitefield_crawl", icon: "🟦", title: "Whitefield Road Stretch", subtitle: "Marathahalli ↔ Whitefield", desc: "Signal clustering and high office-hour dependency. Significant crawl during evening peak." }
+        ];
+
+        function renderHotspots() {
+            const container = document.getElementById('hotspot-list');
+            container.innerHTML = hotspots.map(h => `
+                <div onclick="simulate('${h.id}')" class="p-4 glass rounded-xl card-hover cursor-pointer border-l-4 border-transparent hover:border-blue-500">
+                    <div class="flex items-start space-x-3">
+                        <span class="text-2xl">${h.icon}</span>
+                        <div>
+                            <h3 class="font-bold text-white">${h.title}</h3>
+                            <p class="text-slate-400 text-sm">${h.subtitle}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function simulate(id) {
+            const loader = document.getElementById('loader');
+            const mapFrame = document.getElementById('map-frame');
+            const placeholder = document.getElementById('placeholder');
+            const statsPanel = document.getElementById('stats-panel');
+            const descPanel = document.getElementById('description-panel');
+
+            loader.classList.remove('hidden');
+            mapFrame.classList.add('hidden');
+            placeholder.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/simulate-hotspot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hotspot_id: id })
+                });
+                const data = await response.json();
+
+                if (data.error) throw new Error(data.error);
+
+                // Update UI
+                mapFrame.src = data.map_url;
+                mapFrame.classList.remove('hidden');
+                
+                document.getElementById('stat-iter').innerText = data.iterations * 2; // Each iteration is 2 mins
+                document.getElementById('stat-overloaded').innerText = data.total_overloaded;
+                document.getElementById('scenario-desc').innerText = data.description;
+                
+                statsPanel.classList.remove('hidden');
+                descPanel.classList.remove('hidden');
+
+            } catch (err) {
+                alert("Simulation failed: " + err.message);
+                placeholder.classList.remove('hidden');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        renderHotspots();
+    </script>
+</body>
+</html>

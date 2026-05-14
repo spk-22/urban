@@ -27,7 +27,6 @@ import folium
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from shapely.geometry import shape
 
 
 class PowerGraphBuilder:
@@ -444,14 +443,14 @@ class PowerGraphBuilder:
 
                 try:
 
-                    polygon = shape(
-                        geometry
-                    )
-
-                    centroid = polygon.centroid
-
-                    lat = centroid.y
-                    lon = centroid.x
+                    if geometry_type == "Polygon":
+                        pts = coordinates[0]
+                    else:
+                        pts = coordinates[0][0]
+                    lats = [pt[1] for pt in pts]
+                    lons = [pt[0] for pt in pts]
+                    lat = sum(lats) / len(lats)
+                    lon = sum(lons) / len(lons)
 
                     current_coord = (
                         lat,

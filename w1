@@ -1,0 +1,41 @@
+# Walkthrough: Bengaluru Realistic Shockwave Simulator
+
+We have completely overhauled the cascade engine to stop behaving like a fluid dynamic model and start behaving like real **Bengaluru urban traffic**.
+
+## 🌊 1. Shockwave Propagation (Non-Linear Escalation)
+Traffic no longer spreads out smoothly and evenly.
+- **Tipping Points:** Once a junction hits 85% load, travel time doubles. At 92%, it jumps 5x (unstable). If it crosses 97%, travel time explodes by 20x, simulating **catastrophic gridlock**.
+- **Temporal Waves:** The simulation now calculates propagation minute-by-minute. You will see the timeline advance in the dashboard (e.g., 30 Minutes Elapsed) as the shockwave pushes outward layer by layer from the epicenter.
+
+## 🚧 2. Queue Spillback & Intersection Failure
+Intersections are the primary failure points, not just the roads.
+- **Physical Storage Limit:** Every road segment now has a `storage_capacity` based on its length in meters and number of lanes.
+- **Spillback:** If the `current_load` exceeds the physical `storage_capacity`, vehicles waiting at the junction physically block the *upstream* intersection. The simulator recognizes this and sharply cuts the capacity of the upstream node by 50%, forcing the gridlock to crawl backward.
+- **Signal Multipliers:** Signalized junctions have lower failure thresholds (85% instead of 100%) and collapse faster under sudden load.
+
+## 🗺️ 3. Biased Human Rerouting
+Drivers do not redistribute optimally. 
+- The routing engine now uses a **70 / 20 / 10 Split Rule**:
+  - **70%** follow the fastest Google Maps arterial route.
+  - **20%** take a known secondary alternative.
+  - **10%** leak into narrow residential/local layouts.
+- This creates secondary choke points where the 70% of drivers stubbornly push into another major arterial that can't handle them.
+
+## 🏛️ 4. Super-Node Hierarchy
+Not all roads are equal. The simulator actively recognizes specific Bengaluru corridors:
+- **Outer Ring Road (ORR)**
+- **Hosur Road (Silk Board)**
+- **Bellary Road (Hebbal)**
+- **Old Madras Road (KR Puram)**
+
+Failure near these roads triggers a **2x amplification multiplier** because they attract exponentially more traffic density than normal junctions.
+
+## 🔴 5. Visually Extreme Criticality
+- The **Primary Failure Source** is now highlighted with a massive glowing, pulsing Red/Black marker on the map labeled "PRIMARY FAILURE SOURCE".
+- The color scale has been shifted to represent true criticality:
+  - **Black:** > 100% Load (Complete Failure / Spillback origin)
+  - **Bright Red:** 95% - 100% Load (Catastrophic)
+  - **Orange:** 85% - 95% Load (Heavy Queue)
+  - **Yellow:** 60% - 85% (Moderate)
+  - **Green:** < 60% (Clear)
+  - **Bright Blue Dashed Lines:** The 3 primary alternate routes taken by displaced drivers.

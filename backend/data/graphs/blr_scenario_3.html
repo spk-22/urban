@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_4a880de17eb8dfb1cb52b2b45b0af87f {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+             <h3 align="center" style="font-size:20px"><b>Scenario 3: Bellandur Flyover Closure</b></h3>
+             
+    
+             <div style="position: fixed; 
+                         bottom: 50px; left: 50px; width: 150px; height: 130px; 
+                         border:2px solid grey; z-index:9999; font-size:14px;
+                         background-color: white; opacity: 0.85;
+                         padding: 10px;">
+             <b>Load Level</b><br>
+             &nbsp;<i class="fa fa-circle" style="color:#2ecc71"></i>&nbsp; Normal (&lt;60%)<br>
+             &nbsp;<i class="fa fa-circle" style="color:#f1c40f"></i>&nbsp; Moderate (60-85%)<br>
+             &nbsp;<i class="fa fa-circle" style="color:#e67e22"></i>&nbsp; Congested (85-95%)<br>
+             &nbsp;<i class="fa fa-circle" style="color:#e74c3c"></i>&nbsp; Critical (95-100%)<br>
+             &nbsp;<i class="fa fa-circle" style="color:#2c3e50"></i>&nbsp; Failed (&gt;100%)
+             </div>
+             
+    
+            <div class="folium-map" id="map_4a880de17eb8dfb1cb52b2b45b0af87f" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_4a880de17eb8dfb1cb52b2b45b0af87f = L.map(
+                "map_4a880de17eb8dfb1cb52b2b45b0af87f",
+                {
+                    center: [12.924407142857143, 77.66941428571428],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_cf97c168de5b69eadfd7665f3c267c3e = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_cf97c168de5b69eadfd7665f3c267c3e.addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+            var poly_line_88d9dcb0da94e0bbd3003155343616ba = L.polyline(
+                [[12.9176, 77.6233], [12.9141, 77.6385]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_4a708654dbf394030126029dc250bb1f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2a45cb15fd10509cb116ebd464c50883 = $(`<div id="html_2a45cb15fd10509cb116ebd464c50883" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 67.70%<br>                 <b>Travel Time:</b> 111.4s<br>                 <b>Capacity:</b> 3000 veh/hr             </div>`)[0];
+                popup_4a708654dbf394030126029dc250bb1f.setContent(html_2a45cb15fd10509cb116ebd464c50883);
+            
+        
+
+        poly_line_88d9dcb0da94e0bbd3003155343616ba.bindPopup(popup_4a708654dbf394030126029dc250bb1f)
+        ;
+
+        
+    
+    
+            var poly_line_f28cbff949b0dbb39c14e6c9f0f3469d = L.polyline(
+                [[12.9176, 77.6233], [12.905, 77.635]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_3672ce85960aa0fe52ff932584d7920d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_77fc2da2db8690398cb2cba8225e61d4 = $(`<div id="html_77fc2da2db8690398cb2cba8225e61d4" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> HSR 27th Main<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 70.40%<br>                 <b>Travel Time:</b> 130.64s<br>                 <b>Capacity:</b> 1500 veh/hr             </div>`)[0];
+                popup_3672ce85960aa0fe52ff932584d7920d.setContent(html_77fc2da2db8690398cb2cba8225e61d4);
+            
+        
+
+        poly_line_f28cbff949b0dbb39c14e6c9f0f3469d.bindPopup(popup_3672ce85960aa0fe52ff932584d7920d)
+        ;
+
+        
+    
+    
+            var poly_line_1d86370cbfe454760a13e270a1e011c1 = L.polyline(
+                [[12.9141, 77.6385], [12.925, 77.65]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_efe0efc5afc894ce03055541e69dc82a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6357050864f74807543724779019c95a = $(`<div id="html_6357050864f74807543724779019c95a" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 50.37%<br>                 <b>Travel Time:</b> 90.87s<br>                 <b>Capacity:</b> 3000 veh/hr             </div>`)[0];
+                popup_efe0efc5afc894ce03055541e69dc82a.setContent(html_6357050864f74807543724779019c95a);
+            
+        
+
+        poly_line_1d86370cbfe454760a13e270a1e011c1.bindPopup(popup_efe0efc5afc894ce03055541e69dc82a)
+        ;
+
+        
+    
+    
+            var poly_line_d3307a5c3dea5beb8859cb015d8e77b5 = L.polyline(
+                [[12.925, 77.65], [12.92, 77.665]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_50d030310aa8f4faeb517426f9a2457e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cf34927a22610f4d583c6cad748b2beb = $(`<div id="html_cf34927a22610f4d583c6cad748b2beb" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 59.73%<br>                 <b>Travel Time:</b> 73.37s<br>                 <b>Capacity:</b> 3000 veh/hr             </div>`)[0];
+                popup_50d030310aa8f4faeb517426f9a2457e.setContent(html_cf34927a22610f4d583c6cad748b2beb);
+            
+        
+
+        poly_line_d3307a5c3dea5beb8859cb015d8e77b5.bindPopup(popup_50d030310aa8f4faeb517426f9a2457e)
+        ;
+
+        
+    
+    
+            var poly_line_ce4bc2c011b4d05883c3a262479f96d9 = L.polyline(
+                [[12.925, 77.65], [12.915, 77.655]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_b12b83466f997bf63838b1dee53c55a5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_13f2b3c72a080fd3681e7388c1062d91 = $(`<div id="html_13f2b3c72a080fd3681e7388c1062d91" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Sarjapur Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 65.90%<br>                 <b>Travel Time:</b> 59.23s<br>                 <b>Capacity:</b> 2000 veh/hr             </div>`)[0];
+                popup_b12b83466f997bf63838b1dee53c55a5.setContent(html_13f2b3c72a080fd3681e7388c1062d91);
+            
+        
+
+        poly_line_ce4bc2c011b4d05883c3a262479f96d9.bindPopup(popup_b12b83466f997bf63838b1dee53c55a5)
+        ;
+
+        
+    
+    
+            var poly_line_a5ca7e5289d204f8689ea30c37f91115 = L.polyline(
+                [[12.925, 77.65], [12.91, 77.645]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_efeb959fa65abd23ccd41a691a89f149 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f89d2428d6c901127434b6c9d3d8fc57 = $(`<div id="html_f89d2428d6c901127434b6c9d3d8fc57" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> HSR 14th Main<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 65.00%<br>                 <b>Travel Time:</b> 92.41s<br>                 <b>Capacity:</b> 1500 veh/hr             </div>`)[0];
+                popup_efeb959fa65abd23ccd41a691a89f149.setContent(html_f89d2428d6c901127434b6c9d3d8fc57);
+            
+        
+
+        poly_line_a5ca7e5289d204f8689ea30c37f91115.bindPopup(popup_efeb959fa65abd23ccd41a691a89f149)
+        ;
+
+        
+    
+    
+            var poly_line_f76dcc1fcba1c59382a12fb15ad28a27 = L.polyline(
+                [[12.92, 77.665], [12.93, 77.68]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_734cbfbf5b13598622b352d7dfc930c3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dcebb2a21adc55454d19f6f8be975dfe = $(`<div id="html_dcebb2a21adc55454d19f6f8be975dfe" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> BLOCKED<br>                 <b>Load Ratio:</b> 0.00%<br>                 <b>Travel Time:</b> infs<br>                 <b>Capacity:</b> 0 veh/hr             </div>`)[0];
+                popup_734cbfbf5b13598622b352d7dfc930c3.setContent(html_dcebb2a21adc55454d19f6f8be975dfe);
+            
+        
+
+        poly_line_f76dcc1fcba1c59382a12fb15ad28a27.bindPopup(popup_734cbfbf5b13598622b352d7dfc930c3)
+        ;
+
+        
+    
+    
+            var poly_line_b10b73113c266dd3508858af6682ddb5 = L.polyline(
+                [[12.92, 77.665], [12.915, 77.655]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_72bed42091fd5d128b06b42ad2ad37c1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d7691dde780e946505e7d2782bb5e4cf = $(`<div id="html_d7691dde780e946505e7d2782bb5e4cf" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Sarjapur Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 58.50%<br>                 <b>Travel Time:</b> 65.94s<br>                 <b>Capacity:</b> 2000 veh/hr             </div>`)[0];
+                popup_72bed42091fd5d128b06b42ad2ad37c1.setContent(html_d7691dde780e946505e7d2782bb5e4cf);
+            
+        
+
+        poly_line_b10b73113c266dd3508858af6682ddb5.bindPopup(popup_72bed42091fd5d128b06b42ad2ad37c1)
+        ;
+
+        
+    
+    
+            var poly_line_4f6d6805926e9b9c6575f3fc81132620 = L.polyline(
+                [[12.92, 77.665], [12.91, 77.675]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_8cc5506008f8f350c5a5037cf250f265 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9ebe37766719b35de220046d52f0dde9 = $(`<div id="html_9ebe37766719b35de220046d52f0dde9" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Haralur Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 77.00%<br>                 <b>Travel Time:</b> 189.49s<br>                 <b>Capacity:</b> 1000 veh/hr             </div>`)[0];
+                popup_8cc5506008f8f350c5a5037cf250f265.setContent(html_9ebe37766719b35de220046d52f0dde9);
+            
+        
+
+        poly_line_4f6d6805926e9b9c6575f3fc81132620.bindPopup(popup_8cc5506008f8f350c5a5037cf250f265)
+        ;
+
+        
+    
+    
+            var poly_line_30fe5765dc5ad9f45a8483139d10f799 = L.polyline(
+                [[12.93, 77.68], [12.925, 77.69]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_a497b1406e34e70cc6511a776ea51bbc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c8c1c941712a3850862de0ee09b11ed0 = $(`<div id="html_c8c1c941712a3850862de0ee09b11ed0" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 59.93%<br>                 <b>Travel Time:</b> 61.16s<br>                 <b>Capacity:</b> 3000 veh/hr             </div>`)[0];
+                popup_a497b1406e34e70cc6511a776ea51bbc.setContent(html_c8c1c941712a3850862de0ee09b11ed0);
+            
+        
+
+        poly_line_30fe5765dc5ad9f45a8483139d10f799.bindPopup(popup_a497b1406e34e70cc6511a776ea51bbc)
+        ;
+
+        
+    
+    
+            var poly_line_4efd04723349d4fa7359a979f27a75a0 = L.polyline(
+                [[12.93, 77.68], [12.91, 77.675]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_af06d840ed684209fcc1485f33eefa91 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4e53659d1a26458ceb45cc2240377afe = $(`<div id="html_4e53659d1a26458ceb45cc2240377afe" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Haralur Connection<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 71.80%<br>                 <b>Travel Time:</b> 374.35s<br>                 <b>Capacity:</b> 500 veh/hr             </div>`)[0];
+                popup_af06d840ed684209fcc1485f33eefa91.setContent(html_4e53659d1a26458ceb45cc2240377afe);
+            
+        
+
+        poly_line_4efd04723349d4fa7359a979f27a75a0.bindPopup(popup_af06d840ed684209fcc1485f33eefa91)
+        ;
+
+        
+    
+    
+            var poly_line_08b5bdf2e247d8589f752e7f158337e6 = L.polyline(
+                [[12.925, 77.69], [12.935, 77.695]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_53be3f2ea03ba3af198679ebf9e832da = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_850ef6d2a4f387a1b8fc1e4791e7aab5 = $(`<div id="html_850ef6d2a4f387a1b8fc1e4791e7aab5" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 64.30%<br>                 <b>Travel Time:</b> 67.69s<br>                 <b>Capacity:</b> 3000 veh/hr             </div>`)[0];
+                popup_53be3f2ea03ba3af198679ebf9e832da.setContent(html_850ef6d2a4f387a1b8fc1e4791e7aab5);
+            
+        
+
+        poly_line_08b5bdf2e247d8589f752e7f158337e6.bindPopup(popup_53be3f2ea03ba3af198679ebf9e832da)
+        ;
+
+        
+    
+    
+            var poly_line_6cd979b6fab8b5fd07cd0e1c4591490c = L.polyline(
+                [[12.935, 77.695], [12.94, 77.7]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_2b7745eb3e93bf9ae97c120f582cfaa7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dd90019666db28d6e4fcd6d284ed0e48 = $(`<div id="html_dd90019666db28d6e4fcd6d284ed0e48" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 67.23%<br>                 <b>Travel Time:</b> 49.47s<br>                 <b>Capacity:</b> 3000 veh/hr             </div>`)[0];
+                popup_2b7745eb3e93bf9ae97c120f582cfaa7.setContent(html_dd90019666db28d6e4fcd6d284ed0e48);
+            
+        
+
+        poly_line_6cd979b6fab8b5fd07cd0e1c4591490c.bindPopup(popup_2b7745eb3e93bf9ae97c120f582cfaa7)
+        ;
+
+        
+    
+    
+            var poly_line_9a65a8e0fafc54f6373dba2ba6899160 = L.polyline(
+                [[12.94, 77.7], [12.955, 77.705]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_c19c81cb18e23e9a4583a1492f541b3a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bcb153432dde547a9166e9cbf0bbe8be = $(`<div id="html_bcb153432dde547a9166e9cbf0bbe8be" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Outer Ring Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 48.60%<br>                 <b>Travel Time:</b> 121.0s<br>                 <b>Capacity:</b> 3000 veh/hr             </div>`)[0];
+                popup_c19c81cb18e23e9a4583a1492f541b3a.setContent(html_bcb153432dde547a9166e9cbf0bbe8be);
+            
+        
+
+        poly_line_9a65a8e0fafc54f6373dba2ba6899160.bindPopup(popup_c19c81cb18e23e9a4583a1492f541b3a)
+        ;
+
+        
+    
+    
+            var poly_line_93ce85144f1015738fd60e0b4fd255d9 = L.polyline(
+                [[12.94, 77.7], [12.94, 77.715]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_6bafb4f0ab60baa944c1d32ccf8b2dbd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_91b082b8f1f1448c51518edf77cd2c57 = $(`<div id="html_91b082b8f1f1448c51518edf77cd2c57" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Panathur Road<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 70.70%<br>                 <b>Travel Time:</b> 149.4s<br>                 <b>Capacity:</b> 1000 veh/hr             </div>`)[0];
+                popup_6bafb4f0ab60baa944c1d32ccf8b2dbd.setContent(html_91b082b8f1f1448c51518edf77cd2c57);
+            
+        
+
+        poly_line_93ce85144f1015738fd60e0b4fd255d9.bindPopup(popup_6bafb4f0ab60baa944c1d32ccf8b2dbd)
+        ;
+
+        
+    
+    
+            var poly_line_8d49a607697ab5dcb6c110e336b50ee9 = L.polyline(
+                [[12.955, 77.705], [12.94, 77.715]],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f1c40f", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_7ef9367a2ff7d33d4a1e2f0748004c8d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3a3622e5f081edd99b220bfd7524303b = $(`<div id="html_3a3622e5f081edd99b220bfd7524303b" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> Panathur Connection<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 63.50%<br>                 <b>Travel Time:</b> 221.27s<br>                 <b>Capacity:</b> 1000 veh/hr             </div>`)[0];
+                popup_7ef9367a2ff7d33d4a1e2f0748004c8d.setContent(html_3a3622e5f081edd99b220bfd7524303b);
+            
+        
+
+        poly_line_8d49a607697ab5dcb6c110e336b50ee9.bindPopup(popup_7ef9367a2ff7d33d4a1e2f0748004c8d)
+        ;
+
+        
+    
+    
+            var poly_line_1f26700ca97ea6b26a939faeca76bd5f = L.polyline(
+                [[12.91, 77.645], [12.905, 77.635]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_fb66c56a34d77c672ee418c5ec50b322 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4b1297fdf81d70a994e298783c6d49ec = $(`<div id="html_4b1297fdf81d70a994e298783c6d49ec" style="width: 100.0%; height: 100.0%;">                 <b>Road:</b> HSR 19th Main<br>                 <b>Status:</b> OPEN<br>                 <b>Load Ratio:</b> 56.60%<br>                 <b>Travel Time:</b> 109.66s<br>                 <b>Capacity:</b> 1500 veh/hr             </div>`)[0];
+                popup_fb66c56a34d77c672ee418c5ec50b322.setContent(html_4b1297fdf81d70a994e298783c6d49ec);
+            
+        
+
+        poly_line_1f26700ca97ea6b26a939faeca76bd5f.bindPopup(popup_fb66c56a34d77c672ee418c5ec50b322)
+        ;
+
+        
+    
+    
+            var circle_marker_f104f0f5b70a0fc65bbc1ab8190a7606 = L.circleMarker(
+                [12.9176, 77.6233],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_2d6d7e1714afabd1acfae7b6e46cc9eb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3970e47b00afd4653caa6ae0dea11a43 = $(`<div id="html_3970e47b00afd4653caa6ae0dea11a43" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Silk Board Junction<br>                 <b>Type:</b> signal<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 59.50%<br>                 <b>Load:</b> 714 / 1200             </div>`)[0];
+                popup_2d6d7e1714afabd1acfae7b6e46cc9eb.setContent(html_3970e47b00afd4653caa6ae0dea11a43);
+            
+        
+
+        circle_marker_f104f0f5b70a0fc65bbc1ab8190a7606.bindPopup(popup_2d6d7e1714afabd1acfae7b6e46cc9eb)
+        ;
+
+        
+    
+    
+            var circle_marker_e4e196faaf9bb6b6dffba18cc307429c = L.circleMarker(
+                [12.9141, 77.6385],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_d1be553d5e5a9e4edc47d0ba948662b2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a61af07dab527b02cda4f75a6d085fdb = $(`<div id="html_a61af07dab527b02cda4f75a6d085fdb" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> HSR Layout Entrance<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 63.17%<br>                 <b>Load:</b> 758 / 1200             </div>`)[0];
+                popup_d1be553d5e5a9e4edc47d0ba948662b2.setContent(html_a61af07dab527b02cda4f75a6d085fdb);
+            
+        
+
+        circle_marker_e4e196faaf9bb6b6dffba18cc307429c.bindPopup(popup_d1be553d5e5a9e4edc47d0ba948662b2)
+        ;
+
+        
+    
+    
+            var circle_marker_c0785064fb459e84c3c04505ca5403a9 = L.circleMarker(
+                [12.925, 77.65],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_a29c1336d8e15bc5ec8b2928f35ec1fd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_60b6a1b41cd3373dc34884ff9bc65cb0 = $(`<div id="html_60b6a1b41cd3373dc34884ff9bc65cb0" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Agara Junction<br>                 <b>Type:</b> signal<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 64.83%<br>                 <b>Load:</b> 778 / 1200             </div>`)[0];
+                popup_a29c1336d8e15bc5ec8b2928f35ec1fd.setContent(html_60b6a1b41cd3373dc34884ff9bc65cb0);
+            
+        
+
+        circle_marker_c0785064fb459e84c3c04505ca5403a9.bindPopup(popup_a29c1336d8e15bc5ec8b2928f35ec1fd)
+        ;
+
+        
+    
+    
+            var circle_marker_f4b93acd5a2fdc4ab58bf17656780538 = L.circleMarker(
+                [12.92, 77.665],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_dfdcda626de30b0e4428058a9b520e42 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4e705a5c0dc93120ba4bcae30f134b95 = $(`<div id="html_4e705a5c0dc93120ba4bcae30f134b95" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Iblur Junction<br>                 <b>Type:</b> signal<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 74.08%<br>                 <b>Load:</b> 889 / 1200             </div>`)[0];
+                popup_dfdcda626de30b0e4428058a9b520e42.setContent(html_4e705a5c0dc93120ba4bcae30f134b95);
+            
+        
+
+        circle_marker_f4b93acd5a2fdc4ab58bf17656780538.bindPopup(popup_dfdcda626de30b0e4428058a9b520e42)
+        ;
+
+        
+    
+    
+            var circle_marker_7e4b553af2bd49be775a61113ed2116a = L.circleMarker(
+                [12.93, 77.68],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_36c87d4fb5d2c1105313b4058e580e60 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ae76d1f835dc3b4d6dad1f3fe5febfbd = $(`<div id="html_ae76d1f835dc3b4d6dad1f3fe5febfbd" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Bellandur Junction<br>                 <b>Type:</b> signal<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 75.25%<br>                 <b>Load:</b> 903 / 1200             </div>`)[0];
+                popup_36c87d4fb5d2c1105313b4058e580e60.setContent(html_ae76d1f835dc3b4d6dad1f3fe5febfbd);
+            
+        
+
+        circle_marker_7e4b553af2bd49be775a61113ed2116a.bindPopup(popup_36c87d4fb5d2c1105313b4058e580e60)
+        ;
+
+        
+    
+    
+            var circle_marker_99a1247ce9e0df316cc7500ec6da4f5f = L.circleMarker(
+                [12.925, 77.69],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_502dfa4bda4700e8db32902fb231c4f8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a4a9317eb93b1ecc4f395586a562c46a = $(`<div id="html_a4a9317eb93b1ecc4f395586a562c46a" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Ecospace Entrance<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 60.17%<br>                 <b>Load:</b> 722 / 1200             </div>`)[0];
+                popup_502dfa4bda4700e8db32902fb231c4f8.setContent(html_a4a9317eb93b1ecc4f395586a562c46a);
+            
+        
+
+        circle_marker_99a1247ce9e0df316cc7500ec6da4f5f.bindPopup(popup_502dfa4bda4700e8db32902fb231c4f8)
+        ;
+
+        
+    
+    
+            var circle_marker_89bde0d14f479ead33dd5c50549a230e = L.circleMarker(
+                [12.935, 77.695],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_b27b472a19078bc23bbe393ec62ae35a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_513dbae7ecf1c0ffe1572369a29f8b49 = $(`<div id="html_513dbae7ecf1c0ffe1572369a29f8b49" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Devarabeesanahalli Junction<br>                 <b>Type:</b> signal<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 73.25%<br>                 <b>Load:</b> 879 / 1200             </div>`)[0];
+                popup_b27b472a19078bc23bbe393ec62ae35a.setContent(html_513dbae7ecf1c0ffe1572369a29f8b49);
+            
+        
+
+        circle_marker_89bde0d14f479ead33dd5c50549a230e.bindPopup(popup_b27b472a19078bc23bbe393ec62ae35a)
+        ;
+
+        
+    
+    
+            var circle_marker_b74343c95d48346915b3f9833c202aee = L.circleMarker(
+                [12.94, 77.7],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_08f62a1022c2d2f0795b5202b59249cd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b3736334842f651b979faf56e6641ebd = $(`<div id="html_b3736334842f651b979faf56e6641ebd" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Kadubeesanahalli Junction<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 72.17%<br>                 <b>Load:</b> 866 / 1200             </div>`)[0];
+                popup_08f62a1022c2d2f0795b5202b59249cd.setContent(html_b3736334842f651b979faf56e6641ebd);
+            
+        
+
+        circle_marker_b74343c95d48346915b3f9833c202aee.bindPopup(popup_08f62a1022c2d2f0795b5202b59249cd)
+        ;
+
+        
+    
+    
+            var circle_marker_b86db0f5bcd754b14fd5ce0032041bc3 = L.circleMarker(
+                [12.955, 77.705],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_e1364b12a23256bf077bce5ecbe10749 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_66ea2c8ddc9f0f43fad3f29d3e686872 = $(`<div id="html_66ea2c8ddc9f0f43fad3f29d3e686872" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Marathahalli Bridge<br>                 <b>Type:</b> interchange<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 74.00%<br>                 <b>Load:</b> 888 / 1200             </div>`)[0];
+                popup_e1364b12a23256bf077bce5ecbe10749.setContent(html_66ea2c8ddc9f0f43fad3f29d3e686872);
+            
+        
+
+        circle_marker_b86db0f5bcd754b14fd5ce0032041bc3.bindPopup(popup_e1364b12a23256bf077bce5ecbe10749)
+        ;
+
+        
+    
+    
+            var circle_marker_0f20cbea0469f56d740bb2c149f08711 = L.circleMarker(
+                [12.915, 77.655],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_1bafbb77da4a88406d5b8723e7ebed8a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f54d8b7778a0838e21e079af7184f770 = $(`<div id="html_f54d8b7778a0838e21e079af7184f770" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Sarjapur Road - Agara<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 58.00%<br>                 <b>Load:</b> 696 / 1200             </div>`)[0];
+                popup_1bafbb77da4a88406d5b8723e7ebed8a.setContent(html_f54d8b7778a0838e21e079af7184f770);
+            
+        
+
+        circle_marker_0f20cbea0469f56d740bb2c149f08711.bindPopup(popup_1bafbb77da4a88406d5b8723e7ebed8a)
+        ;
+
+        
+    
+    
+            var circle_marker_ff39e5fce9200825e09c4cc5a2686459 = L.circleMarker(
+                [12.91, 77.645],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_39775ba5d2d9ff9b52ee51f414b18d59 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_02c81f153b25daa930e37197da77e821 = $(`<div id="html_02c81f153b25daa930e37197da77e821" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> HSR Sector 1<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 60.67%<br>                 <b>Load:</b> 728 / 1200             </div>`)[0];
+                popup_39775ba5d2d9ff9b52ee51f414b18d59.setContent(html_02c81f153b25daa930e37197da77e821);
+            
+        
+
+        circle_marker_ff39e5fce9200825e09c4cc5a2686459.bindPopup(popup_39775ba5d2d9ff9b52ee51f414b18d59)
+        ;
+
+        
+    
+    
+            var circle_marker_f5419e1f6d2d1c2b3f6c7e4d71e6786d = L.circleMarker(
+                [12.905, 77.635],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_43c67695e9fed4d642eb7d40a899ea80 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d1000829abdbcdb1962d3b71d6080a90 = $(`<div id="html_d1000829abdbcdb1962d3b71d6080a90" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> HSR Sector 7<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 62.00%<br>                 <b>Load:</b> 744 / 1200             </div>`)[0];
+                popup_43c67695e9fed4d642eb7d40a899ea80.setContent(html_d1000829abdbcdb1962d3b71d6080a90);
+            
+        
+
+        circle_marker_f5419e1f6d2d1c2b3f6c7e4d71e6786d.bindPopup(popup_43c67695e9fed4d642eb7d40a899ea80)
+        ;
+
+        
+    
+    
+            var circle_marker_5e262fc42bba9c4b437d7942fe6cc3a6 = L.circleMarker(
+                [12.91, 77.675],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_785ebbf5f52d307fd695178527cf3f50 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eac822d929f203e783993c4e1c429464 = $(`<div id="html_eac822d929f203e783993c4e1c429464" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Haralur Road Junction<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 63.67%<br>                 <b>Load:</b> 764 / 1200             </div>`)[0];
+                popup_785ebbf5f52d307fd695178527cf3f50.setContent(html_eac822d929f203e783993c4e1c429464);
+            
+        
+
+        circle_marker_5e262fc42bba9c4b437d7942fe6cc3a6.bindPopup(popup_785ebbf5f52d307fd695178527cf3f50)
+        ;
+
+        
+    
+    
+            var circle_marker_6f3615a9cc8cbc2bf6a05f9b5e8d0b49 = L.circleMarker(
+                [12.94, 77.715],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_4a880de17eb8dfb1cb52b2b45b0af87f);
+        
+    
+        var popup_1a679b31a4cc5a90b55cf306529d1d96 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5348a0247ff6128b0e8e26c9ccc9457d = $(`<div id="html_5348a0247ff6128b0e8e26c9ccc9457d" style="width: 100.0%; height: 100.0%;">                 <b>Junction:</b> Panathur Road<br>                 <b>Type:</b> junction<br>                 <b>Status:</b> NORMAL<br>                 <b>Load Ratio:</b> 63.83%<br>                 <b>Load:</b> 766 / 1200             </div>`)[0];
+                popup_1a679b31a4cc5a90b55cf306529d1d96.setContent(html_5348a0247ff6128b0e8e26c9ccc9457d);
+            
+        
+
+        circle_marker_6f3615a9cc8cbc2bf6a05f9b5e8d0b49.bindPopup(popup_1a679b31a4cc5a90b55cf306529d1d96)
+        ;
+
+        
+    
+</script>
+</html>

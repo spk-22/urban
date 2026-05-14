@@ -8,7 +8,10 @@
 # + AUTO GRAPH STORAGE
 # =========================
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, render_template
+import networkx as nx
+import os
+import json
 from pathlib import Path
 
 from ingestion.xml_parser import OSMParser
@@ -16,10 +19,12 @@ from ingestion.xml_parser import OSMParser
 from graph.road import RoadGraphBuilder
 from graph.water import WaterGraphBuilder
 from graph.power import PowerGraphBuilder
+from graph.cascade import RoadCascadeSimulator
+from hotspot_simulator import HotspotSimulator, HOTSPOTS
 
 import traceback
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='data')
 
 # =========================
 # PROJECT PATHS
@@ -655,9 +660,105 @@ def upload_power_geojson():
 
 
 # =========================
+# ROAD SIMULATION ROUTES
+# =========================
+@app.route("/simulate/road-blockage", methods=["POST"])
+def simulate_road_blockage():
+    try:
+        data = request.json
+        graph_path = GRAPH_FOLDER / "road_network.graphml"
+        if not graph_path.exists():
+            return jsonify({"error": "Road graph not found. Please upload road data first."}), 404
+        
+        G = nx.read_graphml(graph_path)
+        simulator = RoadCascadeSimulator(G)
+        
+        target = data.get("target") # Can be node ID or [u, v] list
+        if isinstance(target, list): target = tuple(target)
+        cause = data.get("cause", "unknown")
+        
+        results = simulator.simulate_scenario("road_blockage", target, cause)
+        # Convert graph to serializable form or remove it from response
+        results.pop("graph", None)
+        return jsonify(results), 200
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/simulate/signal-failure", methods=["POST"])
+def simulate_signal_failure():
+    try:
+        data = request.json
+        graph_path = GRAPH_FOLDER / "road_network.graphml"
+        if not graph_path.exists():
+            return jsonify({"error": "Road graph not found."}), 404
+        
+        G = nx.read_graphml(graph_path)
+        simulator = RoadCascadeSimulator(G)
+        
+        target = data.get("target")
+        cause = data.get("cause", "power_outage")
+        
+        results = simulator.simulate_scenario("signal_failure", target, cause)
+        results.pop("graph", None)
+        return jsonify(results), 200
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/simulate/flyover-closure", methods=["POST"])
+def simulate_flyover_closure():
+    try:
+        data = request.json
+        graph_path = GRAPH_FOLDER / "road_network.graphml"
+        if not graph_path.exists():
+            return jsonify({"error": "Road graph not found."}), 404
+        
+        G = nx.read_graphml(graph_path)
+        simulator = RoadCascadeSimulator(G)
+        
+        target = data.get("target")
+        if isinstance(target, list): target = tuple(target)
+        cause = data.get("cause", "maintenance")
+        
+        results = simulator.simulate_scenario("flyover_closure", target, cause)
+        results.pop("graph", None)
+        return jsonify(results), 200
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/simulate-hotspot", methods=["POST"])
+def api_simulate_hotspot():
+    try:
+        data = request.json
+        hotspot_id = data.get("hotspot_id")
+        if not hotspot_id:
+            return jsonify({"error": "Missing hotspot_id"}), 400
+        
+        sim = HotspotSimulator()
+        results = sim.run_hotspot(hotspot_id)
+        return jsonify(results), 200
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/hotspots", methods=["GET"])
+def api_get_hotspots():
+    return jsonify(HOTSPOTS), 200
+
+@app.route("/maps/<path:filename>")
+def serve_graph_files(filename):
+    return send_from_directory(GRAPH_FOLDER, filename)
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
+
+# =========================
 # HEALTH CHECK
 # =========================
-@app.route("/", methods=["GET"])
+@app.route("/health", methods=["GET"])
 def home():
 
     return jsonify({

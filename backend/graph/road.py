@@ -27,6 +27,26 @@ import folium
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# =========================================
+# ROAD CLASS DEFAULTS
+# =========================================
+ROAD_CLASS_DEFAULTS = {
+    "motorway":    {"speed_kmh": 80, "edge_capacity": 4000, "node_capacity": 6000},
+    "trunk":       {"speed_kmh": 60, "edge_capacity": 3000, "node_capacity": 4500},
+    "primary":     {"speed_kmh": 50, "edge_capacity": 2000, "node_capacity": 3500},
+    "secondary":   {"speed_kmh": 40, "edge_capacity": 1500, "node_capacity": 2500},
+    "tertiary":    {"speed_kmh": 30, "edge_capacity": 1000, "node_capacity": 1500},
+    "residential": {"speed_kmh": 20, "edge_capacity": 500,  "node_capacity": 800},
+    "service":     {"speed_kmh": 15, "edge_capacity": 300,  "node_capacity": 500},
+    "unclassified": {"speed_kmh": 25, "edge_capacity": 600, "node_capacity": 900},
+}
+
+DEFAULT_ROAD = {"speed_kmh": 30, "edge_capacity": 800, "node_capacity": 1200}
+
+# BPR formula constants
+BPR_ALPHA = 0.15
+BPR_BETA = 4.0
+
 
 class RoadGraphBuilder:
 
@@ -180,26 +200,18 @@ class RoadGraphBuilder:
 
                 G.add_node(
                     node_id,
-
                     latitude=lat,
                     longitude=lon,
-
-                    road_type=row.get(
-                        "road_node_type",
-                        "N/A"
-                    ),
-
-                    highway_type=row.get(
-                        "highway_type",
-                        "N/A"
-                    ),
-
-                    importance=row.get(
-                        "importance",
-                        "N/A"
-                    ),
-
-                    source="xlsx"
+                    road_type=row.get("road_node_type", "N/A"),
+                    highway_type=row.get("highway_type", "N/A"),
+                    importance=row.get("importance", "N/A"),
+                    source="xlsx",
+                    # capacity attributes
+                    capacity=800,  # placeholder, will be updated later via enhance_graph
+                    current_load=0,
+                    load_ratio=0.0,
+                    node_type="junction",
+                    status="normal"
                 )
 
                 node_counter += 1
@@ -238,6 +250,7 @@ class RoadGraphBuilder:
                 []
             )
 
+            edge_geometry = [[lat, lon] for lon, lat in coordinates]
             previous_node = None
 
             # =============================
@@ -267,24 +280,17 @@ class RoadGraphBuilder:
 
                     G.add_node(
                         node_id,
-
                         latitude=lat,
                         longitude=lon,
-
-                        road_name=properties.get(
-                            "name",
-                            "N/A"
-                        ),
-
-                        road_class=properties.get(
-                            "class",
-                            properties.get(
-                                "highway",
-                                "N/A"
-                            )
-                        ),
-
-                        source="geojson"
+                        road_name=properties.get("name", "N/A"),
+                        road_class=properties.get("class", properties.get("highway", "N/A")),
+                        source="geojson",
+                        # capacity attributes
+                        capacity=800,
+                        current_load=0,
+                        load_ratio=0.0,
+                        node_type="junction",
+                        status="normal"
                     )
 
                     node_counter += 1
@@ -319,21 +325,14 @@ class RoadGraphBuilder:
                     G.add_edge(
                         previous_node,
                         current_node,
-
                         weight=distance,
-
-                        road_name=properties.get(
-                            "name",
-                            "N/A"
-                        ),
-
-                        road_class=properties.get(
-                            "class",
-                            properties.get(
-                                "highway",
-                                "N/A"
-                            )
-                        )
+                        # capacity attributes (placeholder values, will be refined later)
+                        capacity=800,
+                        current_load=0,
+                        free_flow_time=distance / (50 * 1000 / 3600),  # assuming 50 km/h speed, convert to m/s
+                        current_travel_time=distance / (50 * 1000 / 3600),
+                        status="open",
+                        geometry=edge_geometry # Store full LineString geometry
                     )
 
                 previous_node = current_node
@@ -438,11 +437,14 @@ class RoadGraphBuilder:
                     G.nodes[v]["longitude"]
                 )
 
+                geom = G.edges[u, v].get("geometry")
+                if geom:
+                    locations = geom
+                else:
+                    locations = [point1, point2]
+
                 folium.PolyLine(
-                    locations=[
-                        point1,
-                        point2
-                    ],
+                    locations=locations,
                     weight=2
                 ).add_to(road_map)
 
@@ -561,6 +563,49 @@ class RoadGraphBuilder:
     # =====================================
     # COMPLETE ROAD PIPELINE
     # =====================================
+    def assign_capacities(self, G):
+        """Assign realistic capacity, speed, and derived attributes to nodes and edges.
+        Uses ROAD_CLASS_DEFAULTS mapping based on road_class/highway_type.
+        Also initializes random baseline loads (~50-70% of capacity).
+        """
+        import random
+        for node, data in G.nodes(data=True):
+            rc = data.get('road_class') or data.get('highway_type') or data.get('road_type')
+            rc_key = rc.lower() if rc else 'default'
+            defaults = ROAD_CLASS_DEFAULTS.get(rc_key, DEFAULT_ROAD)
+            cap = defaults['node_capacity']
+            load = int(cap * random.uniform(0.45, 0.7))
+            data.update({
+                'capacity': cap,
+                'current_load': load,
+                'load_ratio': round(load / cap, 4),
+                'node_type': data.get('node_type', 'junction'),
+                'status': 'normal'
+            })
+        for u, v, data in G.edges(data=True):
+            rc = data.get('road_class') or data.get('highway')
+            rc_key = rc.lower() if rc else 'default'
+            defaults = ROAD_CLASS_DEFAULTS.get(rc_key, DEFAULT_ROAD)
+            cap = defaults['edge_capacity']
+            speed = defaults['speed_kmh']
+            distance = data.get('weight', 0)
+            free_flow = (distance / 1000) / speed * 3600  # seconds
+            load = int(cap * random.uniform(0.45, 0.7))
+            travel_time = free_flow * (1 + BPR_ALPHA * (load / cap) ** BPR_BETA)
+            data.update({
+                'capacity': cap,
+                'current_load': load,
+                'load_ratio': round(load / cap, 4),
+                'speed_kmh': speed,
+                'free_flow_time': round(free_flow, 2),
+                'current_travel_time': round(travel_time, 2),
+                'status': 'open'
+            })
+        return G
+
+    # =====================================
+    # COMPLETE ROAD PIPELINE
+    # =====================================
     def process_road_network(
         self,
         xlsx_path,
@@ -582,6 +627,9 @@ class RoadGraphBuilder:
             )
 
             return None
+
+        # Assign capacities and loads
+        G = self.assign_capacities(G)
 
         graph_file = self.save_graph(G)
 
