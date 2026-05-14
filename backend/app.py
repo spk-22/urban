@@ -1,34 +1,55 @@
-# =========================
-# FULLY UPDATED app.py
-# XML Parsing + Excel Saving
-# + AUTO ROAD GRAPH GENERATION
-# + AUTO WATER GRAPH GENERATION
-# + AUTO POWER GRAPH GENERATION
-# + AUTO VISUALIZATION
-# + AUTO GRAPH STORAGE
-# =========================
+# ============================================================
+# ADVANCED URBAN SHOCKWAVE ENGINE
+# FULLY UPGRADED app.py
+# ============================================================
 
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    send_from_directory,
+    render_template
+)
+
 import networkx as nx
-import os
+import traceback
 import json
+import os
 from pathlib import Path
+from datetime import datetime
+
+# ============================================================
+# INTERNAL IMPORTS
+# ============================================================
 
 from ingestion.xml_parser import OSMParser
 
 from graph.road import RoadGraphBuilder
 from graph.water import WaterGraphBuilder
 from graph.power import PowerGraphBuilder
+
 from graph.cascade import RoadCascadeSimulator
-from hotspot_simulator import HotspotSimulator, HOTSPOTS
+from graph.cascade_visualizer import CascadeVisualizer
 
-import traceback
+from hotspot_simulator import (
+    HotspotSimulator,
+    HOTSPOTS
+)
 
-app = Flask(__name__, static_folder='data')
+# ============================================================
+# FLASK INIT
+# ============================================================
 
-# =========================
-# PROJECT PATHS
-# =========================
+app = Flask(
+    __name__,
+    static_folder="data",
+    template_folder="templates"
+)
+
+# ============================================================
+# PATHS
+# ============================================================
+
 BASE_DIR = Path(__file__).resolve().parents[1]
 
 UPLOAD_FOLDER = BASE_DIR / "data" / "raw"
@@ -39,10 +60,19 @@ UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 PROCESSED_FOLDER.mkdir(parents=True, exist_ok=True)
 GRAPH_FOLDER.mkdir(parents=True, exist_ok=True)
 
+# ============================================================
+# GLOBAL CACHE
+# ============================================================
 
-# =========================
-# FILE TYPE CHOICE SYSTEM
-# =========================
+LATEST_TIMELINE = []
+LATEST_ANALYTICS = {}
+LATEST_GRAVITY = {}
+LATEST_SIGNAL_HEALTH = {}
+
+# ============================================================
+# FILE TYPE SYSTEM
+# ============================================================
+
 def get_file_type(choice):
 
     switch = {
@@ -51,20 +81,142 @@ def get_file_type(choice):
         "3": "road"
     }
 
-    return switch.get(choice, None)
+    return switch.get(choice)
 
+# ============================================================
+# GRAPH LOADER
+# ============================================================
 
-# =========================
-# XML PROCESSING ROUTE
-# =========================
+def load_road_graph():
+
+    graph_path = GRAPH_FOLDER / "road_network.graphml"
+
+    if not graph_path.exists():
+        raise FileNotFoundError(
+            "road_network.graphml not found"
+        )
+
+    G = nx.read_graphml(graph_path)
+
+    preprocess_graph(G)
+
+    return G
+
+# ============================================================
+# GRAPH PREPROCESSING
+# ============================================================
+
+def preprocess_graph(G):
+
+    print("\n===== PREPROCESSING ROAD NETWORK =====")
+
+    try:
+
+        centrality = nx.betweenness_centrality(
+            G,
+            k=min(100, len(G.nodes)),
+            normalized=True
+        )
+
+    except:
+        centrality = {}
+
+    for node in G.nodes():
+
+        G.nodes[node]["centrality"] = (
+            centrality.get(node, 0)
+        )
+
+        degree = G.degree(node)
+
+        G.nodes[node]["traffic_gravity"] = round(
+            (degree * 0.4)
+            +
+            (centrality.get(node, 0) * 10),
+            4
+        )
+
+        node_type = str(
+            G.nodes[node].get("node_type", "")
+        ).lower()
+
+        G.nodes[node]["is_signal"] = (
+            "signal" in node_type
+        )
+
+        G.nodes[node]["signal_criticality"] = round(
+            G.nodes[node]["traffic_gravity"]
+            *
+            (
+                2.5
+                if G.nodes[node]["is_signal"]
+                else 1.0
+            ),
+            4
+        )
+
+    for u, v, data in G.edges(data=True):
+
+        rc = str(
+            data.get(
+                "road_class",
+                data.get("highway", "residential")
+            )
+        ).lower()
+
+        if rc in [
+            "motorway",
+            "trunk",
+            "primary"
+        ]:
+
+            hierarchy = "arterial"
+            absorption = 3.5
+
+        elif rc in [
+            "secondary",
+            "tertiary"
+        ]:
+
+            hierarchy = "secondary"
+            absorption = 2.0
+
+        else:
+
+            hierarchy = "local"
+            absorption = 0.8
+
+        data["hierarchy"] = hierarchy
+        data["reroute_absorption"] = absorption
+
+        data["gravity_score"] = round(
+            (
+                G.nodes[u].get("traffic_gravity", 1)
+                +
+                G.nodes[v].get("traffic_gravity", 1)
+            )
+            / 2,
+            4
+        )
+
+        data["shockwave_multiplier"] = round(
+            absorption
+            *
+            data["gravity_score"],
+            4
+        )
+
+    print("Graph preprocessing complete.")
+
+# ============================================================
+# XML UPLOAD
+# ============================================================
+
 @app.route("/upload-xml", methods=["POST"])
 def upload_xml():
 
     try:
 
-        # =========================
-        # FILE VALIDATION
-        # =========================
         if "file" not in request.files:
 
             return jsonify({
@@ -79,730 +231,477 @@ def upload_xml():
                 "error": "Empty filename"
             }), 400
 
-        # =========================
-        # CHOICE VALIDATION
-        # =========================
-        file_choice = request.form.get("choice")
+        choice = request.form.get("choice")
 
-        if not file_choice:
-
-            return jsonify({
-                "error": "No infrastructure type selected"
-            }), 400
-
-        file_type = get_file_type(file_choice)
+        file_type = get_file_type(choice)
 
         if not file_type:
 
             return jsonify({
-                "error": "Invalid choice"
+                "error": "Invalid infrastructure choice"
             }), 400
 
-        # =========================
-        # SAVE RAW XML
-        # =========================
-        file_path = UPLOAD_FOLDER / file.filename
+        save_path = UPLOAD_FOLDER / file.filename
 
-        file.save(file_path)
+        file.save(save_path)
 
-        print(f"\nUploaded XML saved at: {file_path}")
-        print(f"Selected type: {file_type}")
-
-        # =========================
-        # PARSER INIT
-        # =========================
         parser = OSMParser()
 
-        # =========================
-        # PARSE INFRASTRUCTURE
-        # =========================
-        if file_type == "power":
+        # ====================================================
+        # PARSE
+        # ====================================================
 
-            df = parser.parse_power_osm(
-                str(file_path)
+        if file_type == "road":
+
+            df = parser.parse_road_osm(
+                str(save_path)
             )
 
         elif file_type == "water":
 
             df = parser.parse_water_osm(
-                str(file_path)
-            )
-
-        elif file_type == "road":
-
-            df = parser.parse_road_osm(
-                str(file_path)
+                str(save_path)
             )
 
         else:
 
-            return jsonify({
-                "error": "Unsupported infrastructure type"
-            }), 400
+            df = parser.parse_power_osm(
+                str(save_path)
+            )
 
-        # =========================
-        # DATA VALIDATION
-        # =========================
         if df is None or df.empty:
 
             return jsonify({
-                "error": f"No {file_type} data extracted"
-            }), 404
+                "error": "No data extracted"
+            }), 500
 
-        print(f"Rows extracted: {len(df)}")
-
-        # =========================
-        # SAVE EXCEL
-        # =========================
         excel_path = parser.save_to_excel(
             df,
             file_type
         )
 
-        if excel_path is None:
-
-            return jsonify({
-                "error": "Excel file saving failed",
-                "details": "save_to_excel returned None"
-            }), 500
-
-        if not Path(excel_path).exists():
-
-            return jsonify({
-                "error": "Excel file not found after saving",
-                "details": str(excel_path)
-            }), 500
-
-        print(f"Excel successfully saved at: {excel_path}")
-
-        # =========================
-        # GRAPH AUTO GENERATION
-        # =========================
         graph_outputs = {}
 
-        # =====================================
-        # POWER GRAPH
-        # =====================================
-        if file_type == "power":
+        # ====================================================
+        # ROAD
+        # ====================================================
 
-            print("\n===== STARTING POWER GRAPH GENERATION =====")
+        if file_type == "road":
 
-            try:
+            builder = RoadGraphBuilder()
 
-                graph_builder = PowerGraphBuilder()
+            graph_outputs = (
+                builder.build_graph_from_dataframe(df)
+            )
 
-                graph_result = (
-                    graph_builder.build_graph_from_xlsx(
-                        str(excel_path)
-                    )
-                )
+        # ====================================================
+        # WATER
+        # ====================================================
 
-                if graph_result:
-
-                    graph_file = graph_builder.save_graph(
-                        graph_result
-                    )
-
-                    html_map = (
-                        graph_builder
-                        .visualize_interactive_map(
-                            graph_result
-                        )
-                    )
-
-                    png_graph = (
-                        graph_builder
-                        .visualize_static_graph(
-                            graph_result
-                        )
-                    )
-
-                    graph_outputs = {
-                        "graphml_output": str(graph_file),
-                        "interactive_map": str(html_map),
-                        "static_graph": str(png_graph),
-                        "nodes": graph_result.number_of_nodes(),
-                        "edges": graph_result.number_of_edges()
-                    }
-
-                    print(
-                        "Power graph successfully generated."
-                    )
-
-                else:
-
-                    print(
-                        "WARNING: Power graph builder returned None"
-                    )
-
-            except Exception as graph_error:
-
-                print("\n===== POWER GRAPH ERROR =====")
-
-                traceback.print_exc()
-
-                graph_outputs = {
-                    "graph_error": str(graph_error)
-                }
-
-        # =====================================
-        # ROAD GRAPH
-        # =====================================
-        elif file_type == "road":
-
-            print("\n===== STARTING ROAD GRAPH GENERATION =====")
-
-            try:
-
-                graph_builder = RoadGraphBuilder()
-
-                graph_result = (
-                    graph_builder
-                    .build_graph_from_dataframe(df)
-                )
-
-                if graph_result:
-
-                    graph_outputs = {
-                        "graphml_output": (
-                            graph_result.get("graphml")
-                        ),
-
-                        "interactive_map": (
-                            graph_result.get(
-                                "interactive_map"
-                            )
-                        ),
-
-                        "static_graph": (
-                            graph_result.get(
-                                "static_graph"
-                            )
-                        ),
-
-                        "nodes": (
-                            graph_result.get("nodes")
-                        ),
-
-                        "edges": (
-                            graph_result.get("edges")
-                        )
-                    }
-
-                    print(
-                        "Road graph successfully generated."
-                    )
-
-                else:
-
-                    print(
-                        "WARNING: Road graph builder returned None"
-                    )
-
-            except Exception as graph_error:
-
-                print("\n===== ROAD GRAPH ERROR =====")
-
-                traceback.print_exc()
-
-                graph_outputs = {
-                    "graph_error": str(graph_error)
-                }
-
-        # =====================================
-        # WATER GRAPH
-        # =====================================
         elif file_type == "water":
 
-            print("\n===== STARTING WATER GRAPH GENERATION =====")
+            builder = WaterGraphBuilder()
 
-            try:
+            graph_outputs = (
+                builder.build_graph_from_dataframe(df)
+            )
 
-                graph_builder = WaterGraphBuilder()
+        # ====================================================
+        # POWER
+        # ====================================================
 
-                graph_result = (
-                    graph_builder
-                    .build_graph_from_dataframe(df)
+        else:
+
+            builder = PowerGraphBuilder()
+
+            graph_outputs = (
+                builder.build_graph_from_xlsx(
+                    str(excel_path)
                 )
+            )
 
-                if graph_result:
+        return jsonify({
 
-                    graph_outputs = {
-                        "graphml_output": (
-                            graph_result.get("graphml")
-                        ),
+            "message":
+                f"{file_type} network processed",
 
-                        "interactive_map": (
-                            graph_result.get(
-                                "interactive_map"
-                            )
-                        ),
+            "rows_extracted":
+                len(df),
 
-                        "static_graph": (
-                            graph_result.get(
-                                "static_graph"
-                            )
-                        ),
+            "excel_output":
+                str(excel_path),
 
-                        "nodes": (
-                            graph_result.get("nodes")
-                        ),
+            "graph_outputs":
+                graph_outputs
+        })
 
-                        "edges": (
-                            graph_result.get("edges")
-                        )
-                    }
+    except Exception as e:
 
-                    print(
-                        "Water graph successfully generated."
-                    )
+        traceback.print_exc()
 
-                else:
+        return jsonify({
+            "error": str(e)
+        }), 500
 
-                    print(
-                        "WARNING: Water graph builder returned None"
-                    )
+# ============================================================
+# STOCHASTIC SIMULATION API
+# ============================================================
 
-            except Exception as graph_error:
+@app.route(
+    "/api/stochastic-simulate",
+    methods=["POST"]
+)
+def stochastic_simulation():
 
-                print("\n===== WATER GRAPH ERROR =====")
+    global LATEST_TIMELINE
+    global LATEST_ANALYTICS
+    global LATEST_GRAVITY
+    global LATEST_SIGNAL_HEALTH
 
-                traceback.print_exc()
+    try:
 
-                graph_outputs = {
-                    "graph_error": str(graph_error)
-                }
+        payload = request.json
 
-        # =========================
-        # FINAL RESPONSE
-        # =========================
-        response = {
-            "message": (
-                f"{file_type.capitalize()} "
-                f"XML processed successfully"
-            ),
+        scenario_type = payload.get(
+            "scenario_type",
+            "road_blockage"
+        )
 
-            "selected_choice": file_choice,
+        target = payload.get("target")
 
-            "file_type": file_type,
+        cause = payload.get(
+            "cause",
+            "unknown"
+        )
 
-            "rows_extracted": len(df),
+        if isinstance(target, list):
+            target = tuple(target)
 
-            "excel_output": str(excel_path),
+        G = load_road_graph()
 
-            "uploaded_file": str(file_path)
+        simulator = RoadCascadeSimulator(G)
+
+        results = simulator.simulate_scenario(
+            scenario_type=scenario_type,
+            target_id=target,
+            cause=cause
+        )
+
+        graph = results.get("graph")
+
+        # ====================================================
+        # VISUALIZATION
+        # ====================================================
+
+        visualizer = CascadeVisualizer()
+
+        filename = (
+            f"shockwave_"
+            f"{datetime.now().strftime('%H%M%S')}.html"
+        )
+
+        map_path = visualizer.create_cascade_map(
+            graph,
+            title="Urban Shockwave Simulation",
+            filename=filename
+        )
+
+        # ====================================================
+        # STORE GLOBALS
+        # ====================================================
+
+        LATEST_TIMELINE = (
+            results.get("cascade", {})
+            .get("cascade_log", [])
+        )
+
+        LATEST_ANALYTICS = {
+
+            "97th_percentile_delay":
+                results.get(
+                    "risk_97_delay",
+                    0
+                ),
+
+            "97th_percentile_load":
+                results.get(
+                    "risk_97_load",
+                    0
+                ),
+
+            "shockwave_radius":
+                results.get(
+                    "shockwave_radius",
+                    0
+                ),
+
+            "spillback_probability":
+                results.get(
+                    "spillback_probability",
+                    0
+                ),
+
+            "reroute_entropy":
+                results.get(
+                    "reroute_entropy",
+                    0
+                )
         }
 
-        response.update(graph_outputs)
+        gravity_corridors = []
 
-        return jsonify(response), 200
+        for u, v, d in graph.edges(data=True):
 
-    except Exception as e:
+            gravity_corridors.append({
 
-        print("\n===== FULL XML ERROR TRACE =====")
+                "u": u,
+                "v": v,
 
-        traceback.print_exc()
+                "gravity_score":
+                    d.get(
+                        "gravity_score",
+                        0
+                    ),
 
-        return jsonify({
-            "error": "Processing failed",
-            "details": str(e)
-        }), 500
+                "hierarchy":
+                    d.get(
+                        "hierarchy",
+                        "local"
+                    ),
 
+                "load_ratio":
+                    d.get(
+                        "load_ratio",
+                        0
+                    )
+            })
 
-# =========================
-# DIRECT ROAD GEOJSON ROUTE
-# =========================
-@app.route("/upload-road-geojson", methods=["POST"])
-def upload_road_geojson():
-
-    try:
-
-        if "file" not in request.files:
-
-            return jsonify({
-                "error": "No GeoJSON file uploaded"
-            }), 400
-
-        file = request.files["file"]
-
-        if file.filename == "":
-
-            return jsonify({
-                "error": "Empty filename"
-            }), 400
-
-        geojson_path = UPLOAD_FOLDER / file.filename
-
-        file.save(geojson_path)
-
-        print(
-            f"\nUploaded Road GeoJSON saved at: "
-            f"{geojson_path}"
+        gravity_corridors.sort(
+            key=lambda x: x["gravity_score"],
+            reverse=True
         )
 
-        graph_builder = RoadGraphBuilder()
+        LATEST_GRAVITY = {
+            "top_corridors":
+                gravity_corridors[:25]
+        }
 
-        graph_result = (
-            graph_builder.process_road_network(
-                str(geojson_path)
-            )
-        )
+        signals = []
 
-        if graph_result is None:
+        for node, data in graph.nodes(data=True):
 
-            return jsonify({
-                "error": "Road graph generation failed"
-            }), 500
+            if data.get("is_signal"):
 
-        return jsonify({
-            "message": (
-                "Road graph created successfully"
-            ),
+                signals.append({
 
-            "geojson_input": str(geojson_path),
+                    "node": node,
 
-            "graphml_output": (
-                graph_result["graphml"]
-            ),
+                    "queue_pressure":
+                        data.get(
+                            "queue_pressure",
+                            0
+                        ),
 
-            "interactive_map": (
-                graph_result["interactive_map"]
-            ),
+                    "signal_stability":
+                        data.get(
+                            "signal_stability",
+                            1
+                        ),
 
-            "static_graph": (
-                graph_result["static_graph"]
-            ),
+                    "spillback_probability":
+                        data.get(
+                            "spillback_probability",
+                            0
+                        ),
 
-            "nodes": graph_result["nodes"],
+                    "status":
+                        data.get(
+                            "status",
+                            "normal"
+                        )
+                })
 
-            "edges": graph_result["edges"]
-        }), 200
+        LATEST_SIGNAL_HEALTH = {
+            "signals": signals
+        }
 
-    except Exception as e:
-
-        print(
-            "\n===== FULL ROAD GRAPH ERROR TRACE ====="
-        )
-
-        traceback.print_exc()
-
-        return jsonify({
-            "error": "Road graph processing failed",
-            "details": str(e)
-        }), 500
-
-
-# =========================
-# DIRECT WATER GEOJSON ROUTE
-# =========================
-@app.route("/upload-water-geojson", methods=["POST"])
-def upload_water_geojson():
-
-    try:
-
-        if "file" not in request.files:
-
-            return jsonify({
-                "error": "No GeoJSON file uploaded"
-            }), 400
-
-        file = request.files["file"]
-
-        if file.filename == "":
-
-            return jsonify({
-                "error": "Empty filename"
-            }), 400
-
-        geojson_path = UPLOAD_FOLDER / file.filename
-
-        file.save(geojson_path)
-
-        print(
-            f"\nUploaded Water GeoJSON saved at: "
-            f"{geojson_path}"
-        )
-
-        graph_builder = WaterGraphBuilder()
-
-        graph_result = (
-            graph_builder.process_water_network(
-                str(geojson_path)
-            )
-        )
-
-        if graph_result is None:
-
-            return jsonify({
-                "error": "Water graph generation failed"
-            }), 500
-
-        return jsonify({
-            "message": (
-                "Water graph created successfully"
-            ),
-
-            "geojson_input": str(geojson_path),
-
-            "graphml_output": (
-                graph_result["graphml"]
-            ),
-
-            "interactive_map": (
-                graph_result["interactive_map"]
-            ),
-
-            "static_graph": (
-                graph_result["static_graph"]
-            ),
-
-            "nodes": graph_result["nodes"],
-
-            "edges": graph_result["edges"]
-        }), 200
-
-    except Exception as e:
-
-        print(
-            "\n===== FULL WATER GRAPH ERROR TRACE ====="
-        )
-
-        traceback.print_exc()
-
-        return jsonify({
-            "error": "Water graph processing failed",
-            "details": str(e)
-        }), 500
-
-
-# =========================
-# DIRECT POWER GEOJSON ROUTE
-# =========================
-@app.route("/upload-power-geojson", methods=["POST"])
-def upload_power_geojson():
-
-    try:
-
-        if "file" not in request.files:
-
-            return jsonify({
-                "error": "No GeoJSON file uploaded"
-            }), 400
-
-        file = request.files["file"]
-
-        if file.filename == "":
-
-            return jsonify({
-                "error": "Empty filename"
-            }), 400
-
-        geojson_path = UPLOAD_FOLDER / file.filename
-
-        file.save(geojson_path)
-
-        print(
-            f"\nUploaded Power GeoJSON saved at: "
-            f"{geojson_path}"
-        )
-
-        graph_builder = PowerGraphBuilder()
-
-        graph_result = (
-            graph_builder.process_power_network(
-                str(geojson_path),
-                "geojson"
-            )
-        )
-
-        if graph_result is None:
-
-            return jsonify({
-                "error": "Power graph generation failed"
-            }), 500
-
-        return jsonify({
-            "message": (
-                "Power graph created successfully"
-            ),
-
-            "geojson_input": str(geojson_path),
-
-            "graphml_output": (
-                graph_result["graphml"]
-            ),
-
-            "interactive_map": (
-                graph_result["interactive_map"]
-            ),
-
-            "static_graph": (
-                graph_result["static_graph"]
-            ),
-
-            "nodes": graph_result["nodes"],
-
-            "edges": graph_result["edges"]
-        }), 200
-
-    except Exception as e:
-
-        print(
-            "\n===== FULL POWER GRAPH ERROR TRACE ====="
-        )
-
-        traceback.print_exc()
-
-        return jsonify({
-            "error": "Power graph processing failed",
-            "details": str(e)
-        }), 500
-
-
-# =========================
-# ROAD SIMULATION ROUTES
-# =========================
-@app.route("/simulate/road-blockage", methods=["POST"])
-def simulate_road_blockage():
-    try:
-        data = request.json
-        graph_path = GRAPH_FOLDER / "road_network.graphml"
-        if not graph_path.exists():
-            return jsonify({"error": "Road graph not found. Please upload road data first."}), 404
-        
-        G = nx.read_graphml(graph_path)
-        simulator = RoadCascadeSimulator(G)
-        
-        target = data.get("target") # Can be node ID or [u, v] list
-        if isinstance(target, list): target = tuple(target)
-        cause = data.get("cause", "unknown")
-        
-        results = simulator.simulate_scenario("road_blockage", target, cause)
-        # Convert graph to serializable form or remove it from response
         results.pop("graph", None)
-        return jsonify(results), 200
+
+        return jsonify({
+
+            "message":
+                "Advanced stochastic simulation complete",
+
+            "map_url":
+                f"/maps/{Path(map_path).name}",
+
+            "results":
+                results,
+
+            "analytics":
+                LATEST_ANALYTICS
+        })
+
     except Exception as e:
+
         traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
 
-@app.route("/simulate/signal-failure", methods=["POST"])
-def simulate_signal_failure():
-    try:
-        data = request.json
-        graph_path = GRAPH_FOLDER / "road_network.graphml"
-        if not graph_path.exists():
-            return jsonify({"error": "Road graph not found."}), 404
-        
-        G = nx.read_graphml(graph_path)
-        simulator = RoadCascadeSimulator(G)
-        
-        target = data.get("target")
-        cause = data.get("cause", "power_outage")
-        
-        results = simulator.simulate_scenario("signal_failure", target, cause)
-        results.pop("graph", None)
-        return jsonify(results), 200
-    except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "error": str(e)
+        }), 500
 
-@app.route("/simulate/flyover-closure", methods=["POST"])
-def simulate_flyover_closure():
-    try:
-        data = request.json
-        graph_path = GRAPH_FOLDER / "road_network.graphml"
-        if not graph_path.exists():
-            return jsonify({"error": "Road graph not found."}), 404
-        
-        G = nx.read_graphml(graph_path)
-        simulator = RoadCascadeSimulator(G)
-        
-        target = data.get("target")
-        if isinstance(target, list): target = tuple(target)
-        cause = data.get("cause", "maintenance")
-        
-        results = simulator.simulate_scenario("flyover_closure", target, cause)
-        results.pop("graph", None)
-        return jsonify(results), 200
-    except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+# ============================================================
+# SIGNAL HEALTH API
+# ============================================================
 
-@app.route("/api/simulate-hotspot", methods=["POST"])
-def api_simulate_hotspot():
-    try:
-        data = request.json
-        hotspot_id = data.get("hotspot_id")
-        if not hotspot_id:
-            return jsonify({"error": "Missing hotspot_id"}), 400
-        
-        sim = HotspotSimulator()
-        results = sim.run_hotspot(hotspot_id)
-        return jsonify(results), 200
-    except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+@app.route(
+    "/api/signal-health",
+    methods=["GET"]
+)
+def signal_health():
 
-@app.route("/api/hotspots", methods=["GET"])
-def api_get_hotspots():
-    return jsonify(HOTSPOTS), 200
+    return jsonify(
+        LATEST_SIGNAL_HEALTH
+    )
 
-@app.route("/maps/<path:filename>")
-def serve_graph_files(filename):
-    return send_from_directory(GRAPH_FOLDER, filename)
+# ============================================================
+# TRAFFIC GRAVITY API
+# ============================================================
 
-@app.route("/", methods=["GET"])
-def index():
-    return render_template("index.html")
+@app.route(
+    "/api/traffic-gravity",
+    methods=["GET"]
+)
+def traffic_gravity():
 
-# =========================
-# HEALTH CHECK
-# =========================
-@app.route("/health", methods=["GET"])
-def home():
+    return jsonify(
+        LATEST_GRAVITY
+    )
+
+# ============================================================
+# CASCADE TIMELINE API
+# ============================================================
+
+@app.route(
+    "/api/cascade-timeline",
+    methods=["GET"]
+)
+def cascade_timeline():
 
     return jsonify({
 
-        "message": (
-            "OSM XML + Multi-Infrastructure "
-            "Graph API Running"
-        ),
-
-        "available_routes": {
-
-            "/upload-xml": {
-                "1": "Power XML + Graph",
-                "2": "Water XML + Graph",
-                "3": "Road XML + Graph"
-            },
-
-            "/upload-road-geojson":
-                "Road GeoJSON → Graph",
-
-            "/upload-water-geojson":
-                "Water GeoJSON → Graph",
-
-            "/upload-power-geojson":
-                "Power GeoJSON → Graph"
-        },
-
-        "output_locations": {
-
-            "raw_files":
-                str(UPLOAD_FOLDER),
-
-            "excel_files":
-                str(PROCESSED_FOLDER),
-
-            "graph_files":
-                str(GRAPH_FOLDER)
-        }
+        "timeline":
+            LATEST_TIMELINE
     })
 
+# ============================================================
+# HOTSPOT SIMULATION
+# ============================================================
 
-# =========================
+@app.route(
+    "/api/simulate-hotspot",
+    methods=["POST"]
+)
+def simulate_hotspot():
+
+    try:
+
+        data = request.json
+
+        hotspot_id = data.get(
+            "hotspot_id"
+        )
+
+        if not hotspot_id:
+
+            return jsonify({
+                "error":
+                    "Missing hotspot_id"
+            }), 400
+
+        simulator = HotspotSimulator()
+
+        results = simulator.run_hotspot(
+            hotspot_id
+        )
+
+        return jsonify(results)
+
+    except Exception as e:
+
+        traceback.print_exc()
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+# ============================================================
+# HOTSPOTS
+# ============================================================
+
+@app.route(
+    "/api/hotspots",
+    methods=["GET"]
+)
+def get_hotspots():
+
+    return jsonify(HOTSPOTS)
+
+# ============================================================
+# MAP SERVING
+# ============================================================
+
+@app.route("/maps/<path:filename>")
+def serve_map(filename):
+
+    return send_from_directory(
+        GRAPH_FOLDER,
+        filename
+    )
+
+# ============================================================
+# DASHBOARD
+# ============================================================
+
+@app.route("/")
+def index():
+
+    return render_template(
+        "index.html"
+    )
+
+# ============================================================
+# HEALTH
+# ============================================================
+
+@app.route("/health")
+def health():
+
+    return jsonify({
+
+        "status":
+            "Urban Shockwave Engine Running",
+
+        "apis": [
+
+            "/upload-xml",
+
+            "/api/stochastic-simulate",
+
+            "/api/signal-health",
+
+            "/api/traffic-gravity",
+
+            "/api/cascade-timeline",
+
+            "/api/hotspots"
+        ]
+    })
+
+# ============================================================
 # MAIN
-# =========================
+# ============================================================
+
 if __name__ == "__main__":
 
     app.run(

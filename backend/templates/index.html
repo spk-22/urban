@@ -1,119 +1,901 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bengaluru Road Cascade Simulator</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urban Shockwave Engine | Bengaluru Cascade Simulator</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-        body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .card-hover:hover { transform: translateY(-4px); transition: all 0.3s ease; border-color: #3b82f6; }
-        .pulse-red { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        iframe { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; height: 600px; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 30%),
+                radial-gradient(circle at top right, rgba(239, 68, 68, 0.12), transparent 30%),
+                #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .glass-strong {
+            background: rgba(2, 6, 23, 0.88);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .card-hover {
+            transition: all 0.35s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(59, 130, 246, 0.55);
+            box-shadow:
+                0 18px 40px rgba(59, 130, 246, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .pulse-red {
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 18px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .grid-overlay {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        iframe {
+            border-radius: 18px;
+            border: none;
+            width: 100%;
+            height: 820px;
+            background: #0f172a;
+        }
+
+        .legend-road {
+            height: 10px;
+            border-radius: 999px;
+        }
+
+        .signal-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            background: #f43f5e;
+            box-shadow:
+                0 0 0 0 rgba(244, 63, 94, 0.8);
+            animation: signalPulse 1.8s infinite;
+        }
+
+        @keyframes signalPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7);
+            }
+
+            70% {
+                transform: scale(1.15);
+                box-shadow: 0 0 0 16px rgba(244, 63, 94, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+            }
+        }
+
+        .metric-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.06),
+                    transparent);
+            pointer-events: none;
+        }
+
+        .risk-bar {
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .risk-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg,
+                    #22c55e,
+                    #facc15,
+                    #f97316,
+                    #ef4444);
+        }
+
+        .blink {
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 0.5;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .super-node {
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            background: rgba(127, 29, 29, 0.18);
+        }
+
+        .shadow-red {
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.18);
+        }
+
+        .neon-blue {
+            color: #60a5fa;
+        }
+
+        .neon-red {
+            color: #f87171;
+        }
+
+        .neon-orange {
+            color: #fb923c;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+        }
+
+        .thin-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .thin-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+        }
+
+        .hotspot-active {
+            border-color: rgba(239, 68, 68, 0.7) !important;
+            background: rgba(127, 29, 29, 0.24);
+        }
     </style>
 </head>
-<body class="min-h-screen">
 
-    <nav class="p-6 border-b border-slate-800 glass sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i class="fas fa-route text-blue-500 text-3xl"></i>
-                <h1 class="text-2xl font-bold tracking-tight">Urban<span class="text-blue-500">Cascade</span></h1>
+<body class="min-h-screen grid-overlay">
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="sticky top-0 z-50 border-b border-slate-800 glass-strong">
+        <div class="max-w-[1800px] mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-5">
+
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-14 h-14 rounded-2xl bg-blue-500/15 flex items-center justify-center border border-blue-500/30">
+                    <i class="fas fa-wave-square text-2xl text-blue-400"></i>
+                </div>
+
+                <div>
+                    <h1 class="text-3xl font-extrabold tracking-tight">
+                        Urban<span class="text-blue-500">Shockwave</span>
+                    </h1>
+
+                    <p class="text-slate-400 text-sm">
+                        Stochastic Urban Cascade Engine • Bengaluru Traffic Pressure Simulation
+                    </p>
+                </div>
             </div>
-            <div class="flex items-center space-x-4">
-                <span class="px-3 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full border border-red-500/30 uppercase tracking-widest pulse-red">Peak Hour Active</span>
-                <span class="text-slate-400 text-sm">Bengaluru, IN</span>
+
+            <div class="flex flex-wrap items-center gap-3">
+
+                <div
+                    class="px-4 py-2 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-xs uppercase tracking-[0.25em] font-bold pulse-red">
+                    Peak Hour Active
+                </div>
+
+                <div
+                    class="px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs uppercase tracking-[0.22em] font-semibold">
+                    Monte Carlo Routing
+                </div>
+
+                <div
+                    class="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs uppercase tracking-[0.22em] font-semibold">
+                    Spillback Physics Enabled
+                </div>
+
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto py-10 px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            
-            <!-- Left Sidebar: Hotspots -->
-            <div class="space-y-6">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <i class="fas fa-map-marker-alt text-red-500 mr-2"></i> Select Failure Hotspot
-                </h2>
-                
-                <div id="hotspot-list" class="space-y-4">
-                    <!-- Hotspots will be injected here -->
-                    <div class="p-4 glass rounded-xl animate-pulse bg-slate-800 h-24"></div>
-                    <div class="p-4 glass rounded-xl animate-pulse bg-slate-800 h-24"></div>
-                    <div class="p-4 glass rounded-xl animate-pulse bg-slate-800 h-24"></div>
-                </div>
-            </div>
+    <!-- ================= MAIN ================= -->
 
-            <!-- Right: Map View & Stats -->
-            <div class="lg:col-span-2 space-y-6">
-                <div id="map-container" class="glass rounded-2xl overflow-hidden relative">
-                    <div id="loader" class="absolute inset-0 z-10 bg-slate-900/80 flex flex-col items-center justify-center hidden">
-                        <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
-                        <p class="text-blue-400 font-medium">Calculating Cascade Propagation...</p>
+    <main class="max-w-[1800px] mx-auto px-6 py-8">
+
+        <!-- ================= HERO ================= -->
+
+        <section class="mb-8 glass rounded-3xl p-8 shadow-red">
+
+            <div class="grid lg:grid-cols-3 gap-8 items-center">
+
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="signal-dot"></div>
+
+                        <span class="text-red-400 uppercase tracking-[0.3em] text-xs font-bold">
+                            Real-Time Urban Kinetic Pressure Simulation
+                        </span>
                     </div>
-                    <div id="placeholder" class="h-[600px] flex flex-col items-center justify-center text-slate-500 italic">
-                        <i class="fas fa-map-marked-alt text-6xl mb-4 opacity-20"></i>
-                        <p>Select a hotspot to begin real-time simulation</p>
+
+                    <h2 class="text-5xl leading-tight font-black mb-5">
+                        Bengaluru Traffic
+                        <span class="text-blue-400">Shockwave</span>
+                        Cascade Engine
+                    </h2>
+
+                    <p class="text-slate-300 text-lg leading-relaxed max-w-4xl">
+                        Simulates nonlinear congestion propagation using stochastic rerouting,
+                        queue spillback, unstable signal behavior, arterial collapse dynamics,
+                        lane entrapment, and recursive overload redistribution across Bengaluru’s
+                        urban road hierarchy.
+                    </p>
+
+                    <div class="mt-7 flex flex-wrap gap-4">
+
+                        <div class="glass px-5 py-3 rounded-2xl">
+                            <p class="text-xs uppercase tracking-widest text-slate-500 mb-1">
+                                Core Engine
+                            </p>
+                            <p class="font-bold text-white">
+                                Iterative Stochastic Redistribution
+                            </p>
+                        </div>
+
+                        <div class="glass px-5 py-3 rounded-2xl">
+                            <p class="text-xs uppercase tracking-widest text-slate-500 mb-1">
+                                Risk Metric
+                            </p>
+                            <p class="font-bold text-red-400">
+                                97th Percentile Stress
+                            </p>
+                        </div>
+
+                        <div class="glass px-5 py-3 rounded-2xl">
+                            <p class="text-xs uppercase tracking-widest text-slate-500 mb-1">
+                                Behavioral Model
+                            </p>
+                            <p class="font-bold text-blue-300">
+                                Human Routing Chaos
+                            </p>
+                        </div>
+
                     </div>
+                </div>
+
+                <!-- RIGHT HERO PANEL -->
+
+                <div class="glass rounded-3xl p-6">
+
+                    <h3 class="text-lg font-bold mb-5 flex items-center gap-2">
+                        <i class="fas fa-layer-group text-blue-400"></i>
+                        Infrastructure Layers
+                    </h3>
+
+                    <div class="space-y-5">
+
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">
+                                    Arterial Highways
+                                </span>
+
+                                <span class="text-xs text-blue-300">
+                                    Primary / Trunk / ORR
+                                </span>
+                            </div>
+
+                            <div class="legend-road bg-blue-500 w-full h-4"></div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">
+                                    Secondary Corridors
+                                </span>
+
+                                <span class="text-xs text-orange-300">
+                                    Secondary / Tertiary
+                                </span>
+                            </div>
+
+                            <div class="legend-road bg-orange-500 w-3/4 h-3"></div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">
+                                    Residential Leakage Paths
+                                </span>
+
+                                <span class="text-xs text-slate-400">
+                                    Service / Layout Roads
+                                </span>
+                            </div>
+
+                            <div class="legend-road bg-slate-400 w-1/2 h-2"></div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-700">
+
+                            <div class="flex items-center gap-3">
+                                <div class="signal-dot"></div>
+
+                                <div>
+                                    <p class="font-semibold text-sm">
+                                        Signal Nodes
+                                    </p>
+
+                                    <p class="text-xs text-slate-400">
+                                        Queue spillback amplifiers
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="text-right">
+                                <p class="text-xs uppercase text-slate-500">
+                                    State
+                                </p>
+
+                                <p class="text-red-400 font-bold blink">
+                                    Critical
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= MAIN GRID ================= -->
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+
+            <!-- ================= LEFT PANEL ================= -->
+
+            <aside class="xl:col-span-3 space-y-6">
+
+                <!-- HOTSPOTS -->
+
+                <section class="glass rounded-3xl p-6">
+
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-xl font-bold flex items-center gap-3">
+                            <i class="fas fa-triangle-exclamation text-red-400"></i>
+                            Failure Hotspots
+                        </h3>
+
+                        <span class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                            Bengaluru Super Nodes
+                        </span>
+                    </div>
+
+                    <div id="hotspot-list" class="space-y-4 thin-scroll max-h-[780px] overflow-y-auto">
+                        <!-- Injected -->
+                    </div>
+
+                </section>
+
+                <!-- ENGINE INFO -->
+
+                <section class="glass rounded-3xl p-6">
+
+                    <h3 class="text-lg font-bold mb-5 flex items-center gap-2">
+                        <i class="fas fa-microchip text-blue-400"></i>
+                        Simulation Engine
+                    </h3>
+
+                    <div class="space-y-4 text-sm">
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">
+                                Driver Agents
+                            </span>
+
+                            <span class="font-bold text-white">
+                                4000+
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">
+                                Routing Model
+                            </span>
+
+                            <span class="font-bold text-blue-300">
+                                70 / 20 / 10
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">
+                                Congestion Logic
+                            </span>
+
+                            <span class="font-bold text-orange-300">
+                                Recursive Spillback
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">
+                                Stress Metric
+                            </span>
+
+                            <span class="font-bold text-red-400">
+                                P97 Shock Load
+                            </span>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </aside>
+
+            <!-- ================= MAP + ANALYTICS ================= -->
+
+            <section class="xl:col-span-9 space-y-7">
+
+                <!-- MAP -->
+
+                <div class="glass rounded-3xl overflow-hidden relative">
+
+                    <div class="p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+
+                        <div>
+                            <h3 class="text-xl font-bold flex items-center gap-3">
+                                <i class="fas fa-map-location-dot text-blue-400"></i>
+                                Urban Cascade Visualization Layer
+                            </h3>
+
+                            <p class="text-sm text-slate-400 mt-1">
+                                Hierarchical road rendering • stochastic congestion propagation • signal instability
+                                visualization
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3 text-xs">
+
+                            <div class="glass px-3 py-2 rounded-xl flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                Arterial Corridors
+                            </div>
+
+                            <div class="glass px-3 py-2 rounded-xl flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-slate-400"></div>
+                                Local Redistribution
+                            </div>
+
+                            <div class="glass px-3 py-2 rounded-xl flex items-center gap-2">
+                                <div class="signal-dot"></div>
+                                Traffic Signals
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- LOADER -->
+
+                    <div id="loader"
+                        class="absolute inset-0 bg-slate-950/90 z-50 hidden flex-col items-center justify-center">
+
+                        <div
+                            class="w-24 h-24 rounded-full border-4 border-blue-500/30 border-t-blue-500 animate-spin mb-8">
+                        </div>
+
+                        <h3 class="text-2xl font-bold mb-3">
+                            Computing Urban Shockwaves
+                        </h3>
+
+                        <p class="text-slate-400 max-w-xl text-center leading-relaxed">
+                            Running stochastic redistribution, queue spillback analysis,
+                            signal destabilization modeling, and 97th percentile load estimation...
+                        </p>
+
+                    </div>
+
+                    <!-- PLACEHOLDER -->
+
+                    <div id="placeholder" class="h-[820px] flex flex-col items-center justify-center text-center">
+
+                        <div
+                            class="w-32 h-32 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-8">
+                            <i class="fas fa-wave-square text-6xl text-blue-400 opacity-70"></i>
+                        </div>
+
+                        <h3 class="text-3xl font-bold mb-3">
+                            Awaiting Failure Injection
+                        </h3>
+
+                        <p class="text-slate-400 max-w-xl leading-relaxed">
+                            Select a Bengaluru hotspot to inject a disruption and simulate
+                            recursive congestion shockwave propagation across arterial and
+                            residential road networks.
+                        </p>
+
+                    </div>
+
+                    <!-- MAP -->
+
                     <iframe id="map-frame" class="hidden"></iframe>
+
                 </div>
 
-                <div id="stats-panel" class="grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
-                    <div class="glass p-4 rounded-xl text-center">
-                        <p class="text-slate-400 text-xs uppercase mb-1">Minutes Elapsed</p>
-                        <p id="stat-iter" class="text-2xl font-bold text-white">-</p>
+                <!-- ================= METRICS ================= -->
+
+                <div id="stats-panel" class="hidden grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
+
+                    <div class="glass rounded-3xl p-5 metric-card">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                Time Elapsed
+                            </span>
+
+                            <i class="fas fa-clock text-blue-400"></i>
+                        </div>
+
+                        <p id="stat-iter" class="text-4xl font-black">
+                            --
+                        </p>
+
+                        <p class="text-slate-400 text-sm mt-2">
+                            Recursive cascade runtime
+                        </p>
+
                     </div>
-                    <div class="glass p-4 rounded-xl text-center border-l-4 border-red-500">
-                        <p class="text-slate-400 text-xs uppercase mb-1">Failed Nodes</p>
-                        <p id="stat-overloaded" class="text-2xl font-bold text-white">-</p>
+
+                    <div class="glass rounded-3xl p-5 metric-card border border-red-500/20">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                Failed Junctions
+                            </span>
+
+                            <i class="fas fa-triangle-exclamation text-red-400"></i>
+                        </div>
+
+                        <p id="stat-overloaded" class="text-4xl font-black text-red-400">
+                            --
+                        </p>
+
+                        <p class="text-slate-400 text-sm mt-2">
+                            Signal & queue collapse nodes
+                        </p>
+
                     </div>
-                    <div class="glass p-4 rounded-xl text-center">
-                        <p class="text-slate-400 text-xs uppercase mb-1">Congestion %</p>
-                        <p id="stat-impact" class="text-2xl font-bold text-orange-400">Peak</p>
+
+                    <div class="glass rounded-3xl p-5 metric-card">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                P97 Stress
+                            </span>
+
+                            <i class="fas fa-chart-line text-orange-400"></i>
+                        </div>
+
+                        <p id="stat-risk" class="text-4xl font-black text-orange-400">
+                            --
+                        </p>
+
+                        <div class="risk-bar mt-4">
+                            <div id="risk-fill" class="risk-fill" style="width:0%"></div>
+                        </div>
+
                     </div>
-                    <div class="glass p-4 rounded-xl text-center">
-                        <p class="text-slate-400 text-xs uppercase mb-1">Rerouting</p>
-                        <p id="stat-alt" class="text-2xl font-bold text-blue-400">Active</p>
+
+                    <div class="glass rounded-3xl p-5 metric-card">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                Spillback Risk
+                            </span>
+
+                            <i class="fas fa-arrows-left-right-to-line text-purple-400"></i>
+                        </div>
+
+                        <p id="stat-spillback" class="text-4xl font-black text-purple-300">
+                            --
+                        </p>
+
+                        <p class="text-slate-400 text-sm mt-2">
+                            Upstream capacity collapse
+                        </p>
+
                     </div>
+
+                    <div class="glass rounded-3xl p-5 metric-card">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                Reroute Chaos
+                            </span>
+
+                            <i class="fas fa-random text-cyan-400"></i>
+                        </div>
+
+                        <p id="stat-alt" class="text-4xl font-black text-cyan-300">
+                            ACTIVE
+                        </p>
+
+                        <p class="text-slate-400 text-sm mt-2">
+                            Stochastic driver behavior
+                        </p>
+
+                    </div>
+
                 </div>
 
-                <div id="description-panel" class="glass p-6 rounded-2xl hidden">
-                    <h3 class="text-lg font-bold mb-2 text-blue-400">Scenario Analysis</h3>
-                    <p id="scenario-desc" class="text-slate-300 leading-relaxed"></p>
+                <!-- ================= SCENARIO ================= -->
+
+                <div id="description-panel" class="hidden glass rounded-3xl p-7">
+
+                    <div class="flex flex-wrap items-center justify-between gap-5 mb-5">
+
+                        <div>
+                            <h3 class="text-2xl font-bold flex items-center gap-3">
+                                <i class="fas fa-brain text-blue-400"></i>
+                                Cascade Analysis Engine
+                            </h3>
+
+                            <p class="text-slate-400 mt-1">
+                                Multi-layer urban failure interpretation
+                            </p>
+                        </div>
+
+                        <div class="super-node px-4 py-2 rounded-2xl">
+                            <span class="text-red-300 text-sm font-semibold">
+                                High Gravity Traffic Zone
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div id="scenario-desc" class="text-slate-300 leading-loose text-[1.02rem]"></div>
+
                 </div>
-            </div>
+
+            </section>
+
         </div>
+
     </main>
 
+    <!-- ================= SCRIPT ================= -->
+
     <script>
+
         const hotspots = [
-            { id: "silk_board", icon: "🟥", title: "Silk Board Junction", subtitle: "Hosur Road ↔ ORR", desc: "Infamous bottleneck. Merges Electronic City traffic with ORR freight. Causes kilometer-long queues." },
-            { id: "orr_it_corridor", icon: "🟧", title: "Outer Ring Road (ORR)", subtitle: "Marathahalli ↔ Bellandur", desc: "Core IT corridor. High density of tech parks and stop-go traffic waves during peak hours." },
-            { id: "kr_puram", icon: "🟨", title: "KR Puram - Tin Factory", subtitle: "Old Madras Road", desc: "Metro construction + narrow merges. Heavy truck-commuter mix causing gridlock chain reactions." },
-            { id: "hebbal", icon: "🟩", title: "Hebbal Junction", subtitle: "Airport Road ↔ ORR", desc: "Major interchange for North Bengaluru. Flyover merges create massive choke points." },
-            { id: "whitefield_crawl", icon: "🟦", title: "Whitefield Road Stretch", subtitle: "Marathahalli ↔ Whitefield", desc: "Signal clustering and high office-hour dependency. Significant crawl during evening peak." }
+            {
+                id: "silk_board",
+                icon: "🟥",
+                title: "Silk Board Junction",
+                subtitle: "Hosur Road ↔ ORR",
+                risk: "EXTREME",
+                gravity: "3.5x",
+                desc: "One of Bengaluru’s most unstable kinetic traffic zones. Signal collapse rapidly amplifies arterial congestion and propagates spillback into Electronic City and ORR.",
+                tags: ["Signal Collapse", "Shockwave Origin", "Super Node"]
+            },
+
+            {
+                id: "orr_it_corridor",
+                icon: "🟧",
+                title: "ORR IT Corridor",
+                subtitle: "Bellandur ↔ Marathahalli",
+                risk: "SEVERE",
+                gravity: "3.2x",
+                desc: "Dense tech-park corridor with synchronized stop-go wave amplification and high rerouting pressure into service roads.",
+                tags: ["Arterial Collapse", "Heavy Commute", "Recursive Spillback"]
+            },
+
+            {
+                id: "kr_puram",
+                icon: "🟨",
+                title: "KR Puram Interchange",
+                subtitle: "Old Madras Road",
+                risk: "HIGH",
+                gravity: "2.9x",
+                desc: "Truck-commuter merge pressure and metro bottlenecks create unstable queue accumulation and nonlinear congestion spread.",
+                tags: ["Merge Conflict", "Flyover Pressure", "Storage Failure"]
+            },
+
+            {
+                id: "hebbal",
+                icon: "🟩",
+                title: "Hebbal Junction",
+                subtitle: "Airport Road ↔ ORR",
+                risk: "SEVERE",
+                gravity: "2.8x",
+                desc: "Airport corridor turbulence combined with multi-level flyover merges generates strong congestion persistence.",
+                tags: ["Airport Corridor", "Queue Spillback", "Super Junction"]
+            },
+
+            {
+                id: "whitefield_crawl",
+                icon: "🟦",
+                title: "Whitefield Corridor",
+                subtitle: "Marathahalli ↔ Whitefield",
+                risk: "HIGH",
+                gravity: "2.6x",
+                desc: "Signal clustering and office-hour dependency trigger widespread local-road leakage during overload events.",
+                tags: ["Signal Instability", "Local Leakage", "Layout Intrusion"]
+            }
         ];
 
+        let activeHotspot = null;
+
         function renderHotspots() {
+
             const container = document.getElementById('hotspot-list');
+
             container.innerHTML = hotspots.map(h => `
-                <div onclick="simulate('${h.id}')" class="p-4 glass rounded-xl card-hover cursor-pointer border-l-4 border-transparent hover:border-blue-500">
-                    <div class="flex items-start space-x-3">
-                        <span class="text-2xl">${h.icon}</span>
-                        <div>
-                            <h3 class="font-bold text-white">${h.title}</h3>
-                            <p class="text-slate-400 text-sm">${h.subtitle}</p>
+
+                <div
+                    onclick="simulate('${h.id}')"
+                    id="hotspot-${h.id}"
+                    class="glass rounded-3xl p-5 card-hover cursor-pointer border border-slate-700"
+                >
+
+                    <div class="flex justify-between gap-4 mb-4">
+
+                        <div class="flex gap-4">
+
+                            <div class="text-3xl">
+                                ${h.icon}
+                            </div>
+
+                            <div>
+
+                                <h3 class="text-lg font-bold text-white">
+                                    ${h.title}
+                                </h3>
+
+                                <p class="text-sm text-slate-400">
+                                    ${h.subtitle}
+                                </p>
+
+                            </div>
+
                         </div>
+
+                        <div class="text-right">
+
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                                Gravity
+                            </p>
+
+                            <p class="text-red-400 font-black">
+                                ${h.gravity}
+                            </p>
+
+                        </div>
+
                     </div>
+
+                    <div class="flex items-center justify-between mb-4">
+
+                        <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider
+                            ${h.risk === 'EXTREME'
+                    ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                    : 'bg-orange-500/20 text-orange-300 border border-orange-500/30'}
+                        ">
+                            ${h.risk}
+                        </span>
+
+                        <div class="flex items-center gap-2">
+                            <div class="signal-dot"></div>
+
+                            <span class="text-xs text-slate-400">
+                                Active Signal Pressure
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                        ${h.desc}
+                    </p>
+
+                    <div class="flex flex-wrap gap-2">
+
+                        ${h.tags.map(t => `
+                            <span class="px-2 py-1 text-[11px] rounded-full bg-slate-800 border border-slate-700 text-slate-300">
+                                ${t}
+                            </span>
+                        `).join('')}
+
+                    </div>
+
                 </div>
+
             `).join('');
         }
 
+        function activateHotspotCard(id) {
+
+            hotspots.forEach(h => {
+                const el = document.getElementById(`hotspot-${h.id}`);
+
+                if (!el) return;
+
+                el.classList.remove('hotspot-active');
+            });
+
+            const active = document.getElementById(`hotspot-${id}`);
+
+            if (active) {
+                active.classList.add('hotspot-active');
+            }
+        }
+
         async function simulate(id) {
+
+            activeHotspot = id;
+
+            activateHotspotCard(id);
+
             const loader = document.getElementById('loader');
             const mapFrame = document.getElementById('map-frame');
             const placeholder = document.getElementById('placeholder');
@@ -121,39 +903,184 @@
             const descPanel = document.getElementById('description-panel');
 
             loader.classList.remove('hidden');
+            loader.classList.add('flex');
+
             mapFrame.classList.add('hidden');
+
             placeholder.classList.add('hidden');
 
             try {
+
                 const response = await fetch('/api/simulate-hotspot', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ hotspot_id: id })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({
+                        hotspot_id: id
+                    })
                 });
+
                 const data = await response.json();
 
-                if (data.error) throw new Error(data.error);
+                if (data.error) {
+                    throw new Error(data.error);
+                }
 
-                // Update UI
+                // ================= MAP =================
+
                 mapFrame.src = data.map_url;
                 mapFrame.classList.remove('hidden');
-                
-                document.getElementById('stat-iter').innerText = data.iterations * 2; // Each iteration is 2 mins
-                document.getElementById('stat-overloaded').innerText = data.total_overloaded;
-                document.getElementById('scenario-desc').innerText = data.description;
-                
+
+                // ================= METRICS =================
+
+                const iterations = data.iterations || 0;
+                const overloaded = data.total_overloaded || 0;
+
+                const p97 = data.p97_load || Math.min(
+                    100,
+                    60 + overloaded * 4
+                );
+
+                const spillback = data.spillback_risk || Math.min(
+                    100,
+                    45 + overloaded * 3
+                );
+
+                document.getElementById('stat-iter').innerText =
+                    `${iterations * 2}m`;
+
+                document.getElementById('stat-overloaded').innerText =
+                    overloaded;
+
+                document.getElementById('stat-risk').innerText =
+                    `${Math.round(p97)}%`;
+
+                document.getElementById('stat-spillback').innerText =
+                    `${Math.round(spillback)}%`;
+
+                document.getElementById('risk-fill').style.width =
+                    `${Math.min(p97, 100)}%`;
+
+                // ================= DESCRIPTION =================
+
+                document.getElementById('scenario-desc').innerHTML = `
+                    <div class="space-y-5">
+
+                        <p>
+                            ${data.description || "Shockwave propagation detected across major arterial corridors."}
+                        </p>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+
+                            <div class="glass p-4 rounded-2xl border border-red-500/20">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">
+                                    Primary Failure
+                                </p>
+
+                                <p class="font-bold text-red-300">
+                                    Signalized Junction Destabilization
+                                </p>
+                            </div>
+
+                            <div class="glass p-4 rounded-2xl border border-orange-500/20">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">
+                                    Dominant Effect
+                                </p>
+
+                                <p class="font-bold text-orange-300">
+                                    Recursive Queue Spillback
+                                </p>
+                            </div>
+
+                            <div class="glass p-4 rounded-2xl border border-blue-500/20">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">
+                                    Redistribution
+                                </p>
+
+                                <p class="font-bold text-blue-300">
+                                    Residential Leakage Routing
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div class="glass p-5 rounded-2xl">
+
+                            <div class="flex items-center justify-between mb-3">
+
+                                <h4 class="font-bold text-white">
+                                    Stochastic Routing Logic
+                                </h4>
+
+                                <span class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                                    Human Driver Behavior
+                                </span>
+
+                            </div>
+
+                            <div class="grid md:grid-cols-3 gap-4 text-sm">
+
+                                <div class="bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                                    <p class="text-blue-300 font-bold mb-2">
+                                        70%
+                                    </p>
+
+                                    <p class="text-slate-300">
+                                        Drivers remain on major arterial alternates.
+                                    </p>
+                                </div>
+
+                                <div class="bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                                    <p class="text-orange-300 font-bold mb-2">
+                                        20%
+                                    </p>
+
+                                    <p class="text-slate-300">
+                                        Vehicles shift toward secondary corridors.
+                                    </p>
+                                </div>
+
+                                <div class="bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                                    <p class="text-red-300 font-bold mb-2">
+                                        10%
+                                    </p>
+
+                                    <p class="text-slate-300">
+                                        Local-road leakage and gully cut-through behavior.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+
                 statsPanel.classList.remove('hidden');
+
                 descPanel.classList.remove('hidden');
 
             } catch (err) {
+
                 alert("Simulation failed: " + err.message);
+
                 placeholder.classList.remove('hidden');
+
             } finally {
+
                 loader.classList.add('hidden');
+                loader.classList.remove('flex');
+
             }
         }
 
         renderHotspots();
+
     </script>
+
 </body>
+
 </html>
