@@ -1,0 +1,54 @@
+# Power Grid Cascade Failure Simulator
+
+## 1. Goal Description
+Create an entirely independent simulation module (`power_simulation.py`) to model cascading failures in the Bengaluru power grid. The simulator will use electrical flow redistribution and rule-based physics, detecting overloaded transformers, transmission trips, voltage collapse, and grid islanding. It will operate as a standalone Flask service on port `5002`.
+
+## 2. User Review Required
+> [!IMPORTANT]
+> **Data Attributes:** The existing `power_network.graphml` does not inherently contain `capacity (MW)` or `load_factor` for every node. The simulator will automatically generate these attributes based on the `voltage` and `infrastructure` type during initialization (e.g., 220kV lines get higher capacity thresholds). Please confirm this approach.
+> 
+> **Port Configuration:** I will host this on `http://127.0.0.1:5002` since Road is 5000 and Water is 5001.
+
+## 3. Proposed Changes
+
+### [NEW] `backend/power_simulation.py`
+This will be a combined simulation engine and Flask application.
+
+**A. Initialization Phase**
+- Load `/data/graphs/power_network.graphml`.
+- Assign `capacity`, `current_load`, `load_factor`, and `voltage_level_weight` based on infrastructure type (substation, plant) and voltage.
+- Calculate initial betweenness centrality for the Criticality Score.
+
+**B. Cascade Engine (Grid Physics)**
+- **STEP 1:** Accept `node_id` failure.
+- **STEP 2:** Remove node and calculate its `lost_load`.
+- **STEP 3:** Redistribute `lost_load` equally among active neighbors.
+- **STEP 4:** Update neighbor `load_factor`. If `> 1.0`, mark as `failed` and add to the queue.
+- **STEP 5:** Iterate until the queue is empty (stable state).
+
+**C. Novelty Layer (Islanding & Blackouts)**
+- Run `nx.connected_components()` on the surviving graph.
+- Any island lacking a "Power Plant" or major 400kV substation will be marked as a **Blackout Zone** (BLACK).
+- Compute `critical_score` for all nodes to identify vulnerabilities.
+
+**D. Visualization & Outputs**
+- Generate a Folium map `power_cascade_map.html` saving to `/data/graphs/power/`.
+  - GREEN = Normal (<80% load)
+  - YELLOW = Overloaded (80-100% load)
+  - RED = Failed (>100% load)
+  - BLACK = Blackout Island
+- Export `power_cascade.graphml`, `power_cascade_report.json`, and a basic `power_cascade_graph.png`.
+
+**E. Flask API**
+- Setup a Flask app running on port `5002`.
+- Endpoint: `POST /simulate/power-cascade`
+- Endpoint: `GET /` (Simple UI dashboard to trigger the cascade).
+- Endpoint: `GET /data/graphs/power/<path:filename>` (Serve the generated HTML/JSON).
+
+## 4. Verification Plan
+- Run `python power_simulation.py`.
+- Ensure it successfully binds to `5002`.
+- Trigger the API with a high-betweenness node (e.g., `P0`).
+- Verify that the four output files are correctly generated in `/data/graphs/power/`.
+- Visually confirm the Map HTML renders GREEN, RED, and BLACK (islands) properly.
+- Ensure `road.py` and `app.py` remain completely untouched.
