@@ -151,6 +151,24 @@ class CascadeVisualizer:
                 <b>Load:</b> {data.get('current_load', 0)} / {data.get('capacity', 0)}
             """
             
+            # Build rich hover tooltip showing ALL node parameters
+            tooltip_lines = [f"<b>Node ID:</b> {node}"]
+            tooltip_lines.append(f"<b>Name:</b> {data.get('name', 'N/A')}")
+            tooltip_lines.append(f"<b>Type:</b> {node_type}")
+            tooltip_lines.append(f"<b>Status:</b> {data.get('status', 'normal').upper()}")
+            tooltip_lines.append(f"<b>Load Ratio:</b> {lr:.2%}")
+            tooltip_lines.append(f"<b>Current Load:</b> {data.get('current_load', 0)}")
+            tooltip_lines.append(f"<b>Capacity:</b> {data.get('capacity', 0)}")
+            tooltip_lines.append(f"<b>Lat:</b> {data.get('latitude', 'N/A')}")
+            tooltip_lines.append(f"<b>Lon:</b> {data.get('longitude', 'N/A')}")
+            # Include any extra attributes not already shown
+            shown_keys = {'name', 'node_type', 'status', 'load_ratio', 'current_load',
+                          'capacity', 'latitude', 'longitude'}
+            for key, val in data.items():
+                if key not in shown_keys:
+                    tooltip_lines.append(f"<b>{key.replace('_', ' ').title()}:</b> {val}")
+            tooltip_html = "<br>".join(tooltip_lines)
+            
             folium.CircleMarker(
                 location=[data["latitude"], data["longitude"]],
                 radius=radius,
@@ -158,7 +176,8 @@ class CascadeVisualizer:
                 fill=True,
                 fill_color=color,
                 fill_opacity=opacity,
-                popup=folium.Popup(popup, max_width=300)
+                popup=folium.Popup(popup, max_width=300),
+                tooltip=folium.Tooltip(tooltip_html)
             ).add_to(m)
 
         # Add Legend
